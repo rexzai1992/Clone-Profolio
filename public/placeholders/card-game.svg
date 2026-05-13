@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700'>
+  <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#2b2d35'/><stop offset='100%' stop-color='#4b4254'/></linearGradient></defs>
+  <rect width='1200' height='700' fill='url(#g)'/>
+  <circle cx='930' cy='180' r='180' fill='rgba(255,255,255,0.12)'/>
+  <rect x='120' y='420' width='420' height='170' rx='28' fill='rgba(255,255,255,0.12)'/>
+  <text x='120' y='370' fill='rgba(255,255,255,0.9)' font-family='Arial, sans-serif' font-size='64' letter-spacing='8'>GAME PLACEHOLDER</text>
+</svg>
