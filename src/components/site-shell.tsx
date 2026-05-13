@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { SITE_CONFIG } from "@/data/site-config";
 import { useMotion } from "@/context/motion-context";
@@ -27,11 +27,14 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
     toggleNav,
     closeNav,
     toggleDoor,
-    setClockMode
+    setClockMode,
+    triggerTransition
   } = useMotion();
 
   const router = useRouter();
   const inactivityRef = useRef<number | null>(null);
+  const routeTimerRef = useRef<number | null>(null);
+  const [isRouteTransitioning, setIsRouteTransitioning] = useState(false);
   useScrollInview(!isReducedMotion && page === "portfolio");
 
   const activeSlide = SITE_CONFIG.heroSlides[uiState.activeHeroIndex];
@@ -60,7 +63,21 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
           return;
         }
 
-        router.push(href);
+        if (isReducedMotion) {
+          router.push(href);
+          return;
+        }
+
+        if (routeTimerRef.current !== null) {
+          window.clearTimeout(routeTimerRef.current);
+        }
+
+        setIsRouteTransitioning(true);
+        triggerTransition(920);
+        routeTimerRef.current = window.setTimeout(() => {
+          router.push(href);
+          routeTimerRef.current = null;
+        }, 620);
         return;
       }
 
@@ -88,7 +105,7 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
 
       closeNav();
     },
-    [closeNav, isReducedMotion, router]
+    [closeNav, isReducedMotion, router, triggerTransition]
   );
 
   const pageContent = useMemo(() => {
@@ -151,9 +168,18 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
     };
   }, [setClockMode, isReducedMotion]);
 
+  useEffect(() => {
+    return () => {
+      if (routeTimerRef.current !== null) {
+        window.clearTimeout(routeTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div
       className={rootClassName}
+      data-page={page}
       data-reduced-motion={isReducedMotion ? "true" : "false"}
       style={
         {
@@ -187,6 +213,11 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
       <main className="site-main" aria-busy={uiState.isLoading}>
         {pageContent}
       </main>
+
+      <div className={`route-transition ${isRouteTransitioning ? "is-active" : ""}`} aria-hidden="true">
+        <span className="route-transition__brand">{SITE_CONFIG.brandName}</span>
+        <span className="route-transition__mark brand-mark" />
+      </div>
     </div>
   );
 }

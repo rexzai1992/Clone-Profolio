@@ -19,8 +19,8 @@ export function Hero({ onNavigate }: HeroProps) {
 
   const { heroSlides } = SITE_CONFIG;
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
-  const [lockSwitch, setLockSwitch] = useState(false);
   const lockTimerRef = useRef<number | null>(null);
+  const lockUntilRef = useRef(0);
   const prevClearTimerRef = useRef<number | null>(null);
   const autoTimerRef = useRef<number | null>(null);
   const wheelResetTimerRef = useRef<number | null>(null);
@@ -75,7 +75,7 @@ export function Hero({ onNavigate }: HeroProps) {
 
   const activateSlide = useCallback(
     (index: number) => {
-      if (lockSwitch || index === uiState.activeHeroIndex) {
+      if (performance.now() < lockUntilRef.current || index === uiState.activeHeroIndex) {
         return;
       }
 
@@ -91,16 +91,15 @@ export function Hero({ onNavigate }: HeroProps) {
       }, 1000);
 
       if (!isReducedMotion) {
-        setLockSwitch(true);
         clearLockTimer();
+        lockUntilRef.current = performance.now() + heroPreset.switchLockMs;
         lockTimerRef.current = window.setTimeout(() => {
-          setLockSwitch(false);
+          lockUntilRef.current = 0;
           lockTimerRef.current = null;
         }, heroPreset.switchLockMs);
       }
     },
     [
-      lockSwitch,
       uiState.activeHeroIndex,
       heroSlides.length,
       setActiveHeroIndex,
@@ -161,7 +160,7 @@ export function Hero({ onNavigate }: HeroProps) {
 
   const processWheelDelta = useCallback(
     (deltaPx: number) => {
-      if (uiState.isLoading || uiState.isNavOpen || lockSwitch) {
+      if (uiState.isLoading || uiState.isNavOpen || performance.now() < lockUntilRef.current) {
         return false;
       }
 
@@ -204,7 +203,6 @@ export function Hero({ onNavigate }: HeroProps) {
       heroPreset.wheelResetMs,
       heroPreset.wheelImmediatePx,
       heroPreset.wheelTriggerPx,
-      lockSwitch,
       nextIndex,
       previousIndex,
       resetWheelAccumulator,

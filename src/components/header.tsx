@@ -21,13 +21,11 @@ export function Header({ navItems, isNavOpen, onToggleNav, onNavigate }: HeaderP
 
   return (
     <header className="site-header">
-      <a href="/" className="site-header__brand" onClick={(event) => {
+      <a href="/" className="site-header__brand" aria-label={SITE_CONFIG.brandName} onClick={(event) => {
         event.preventDefault();
         onNavigate("/");
       }}>
-        <span className="site-header__mark" aria-hidden="true">
-          KX
-        </span>
+        <span className="site-header__mark brand-mark" aria-hidden="true" />
         <span className="site-header__name">{SITE_CONFIG.brandName}</span>
       </a>
 

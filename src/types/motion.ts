@@ -89,12 +89,12 @@ export const MOTION_TOKENS: MotionTokens = {
     desktop: "16px"
   },
   figures: {
-    wheelTravelMultiplier: 4,
-    dragTravelMultiplier: 4,
+    wheelTravelMultiplier: 3.4,
+    dragTravelMultiplier: 2.8,
     wheelLineStepPx: 16,
     wheelClampPx: 64,
-    autoDriftPxPerSec: 56,
-    interactionPauseMs: 180
+    autoDriftPxPerSec: 42,
+    interactionPauseMs: 2400
   }
 };
 

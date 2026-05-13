@@ -58,10 +58,13 @@ export function FiguresIndex() {
   const offsetRef = useRef(0);
   const targetOffsetRef = useRef(0);
   const revealReadyRef = useRef(false);
+  const initialFigureId = SITE_CONFIG.figures[0]?.id ?? "";
+  const activeFigureIdRef = useRef(initialFigureId);
   const [mode, setMode] = useState<FigureMode>("grid");
-  const [activeFigureId, setActiveFigureId] = useState(SITE_CONFIG.figures[0]?.id ?? "");
+  const [activeFigureId, setActiveFigureId] = useState(initialFigureId);
   const [isHoveringFigure, setIsHoveringFigure] = useState(false);
   const [isSectionActive, setIsSectionActive] = useState(false);
+  const [hasRailInteraction, setHasRailInteraction] = useState(false);
 
   const activeFigure = useMemo(
     () => SITE_CONFIG.figures.find((figure) => figure.id === activeFigureId) ?? SITE_CONFIG.figures[0],
@@ -77,8 +80,22 @@ export function FiguresIndex() {
     []
   );
 
-  const figureCharacter = mode === "grid" && isHoveringFigure && activeFigure ? activeFigure.color : "#ffffff";
-  const figureText = getFigureTextColor(activeFigure, isHoveringFigure, mode);
+  const isRailEngaged = mode === "grid" && (isHoveringFigure || hasRailInteraction);
+  const figureCharacter = isRailEngaged && activeFigure ? activeFigure.color : "#ffffff";
+  const figureText = getFigureTextColor(activeFigure, isRailEngaged, mode);
+
+  const setActiveFigure = useCallback((figureId: string) => {
+    if (activeFigureIdRef.current === figureId) {
+      return;
+    }
+
+    activeFigureIdRef.current = figureId;
+    setActiveFigureId(figureId);
+  }, []);
+
+  const engageRail = useCallback(() => {
+    setHasRailInteraction(true);
+  }, []);
 
   const getNormalizedWheelDelta = useCallback(
     (deltaX: number, deltaY: number, deltaMode: number) => {
@@ -124,24 +141,56 @@ export function FiguresIndex() {
       return;
     }
 
-    itemRefs.current.forEach((item, index) => {
+    const placements = itemRefs.current.map((item, index) => {
       if (!item) {
-        return;
+        return null;
       }
 
       const x = wrapValue(-windowWidth, totalWidth - windowWidth, width * index + offsetRef.current);
       const innerX = ((x + width) / innerCalc - 0.5) * innerTravel;
-      const imageInner = imageInnerRefs.current[index];
       const isVisible = x >= width * -1.1 && x <= windowWidth * 1.1;
+      const centerDistance = Math.abs(x + width / 2 - windowWidth / 2);
 
-      item.style.transform = `translate3d(${x}px, 0, 0)`;
-      item.classList.toggle("is-active", revealReadyRef.current && isVisible);
+      return { centerDistance, index, isVisible, x, innerX };
+    });
+
+    const closest = placements.reduce<{ centerDistance: number; index: number } | null>((current, placement) => {
+      if (!placement?.isVisible) {
+        return current;
+      }
+
+      if (!current || placement.centerDistance < current.centerDistance) {
+        return { centerDistance: placement.centerDistance, index: placement.index };
+      }
+
+      return current;
+    }, null);
+
+    placements.forEach((placement) => {
+      if (!placement) {
+        return;
+      }
+
+      const item = itemRefs.current[placement.index];
+      const imageInner = imageInnerRefs.current[placement.index];
+      if (!item) {
+        return;
+      }
+
+      item.style.transform = `translate3d(${placement.x}px, 0, 0)`;
+      item.classList.toggle("is-active", revealReadyRef.current && placement.isVisible);
+      item.classList.toggle("is-centered", revealReadyRef.current && closest?.index === placement.index);
 
       if (imageInner) {
-        imageInner.style.transform = `translate3d(${innerX}px, 0, 0)`;
+        imageInner.style.transform = `translate3d(${placement.innerX}px, 0, 0)`;
       }
     });
-  }, [mode]);
+
+    const centeredFigure = closest ? SITE_CONFIG.figures[closest.index] : null;
+    if (revealReadyRef.current && centeredFigure) {
+      setActiveFigure(centeredFigure.id);
+    }
+  }, [mode, setActiveFigure]);
 
   const moveRailBy = useCallback(
     (distance: number) => {
@@ -354,12 +403,14 @@ export function FiguresIndex() {
         return false;
       }
 
+      engageRail();
       pauseAutoSlide(tokens.figures.interactionPauseMs);
-      animateRailBy(-deltaPx * tokens.figures.wheelTravelMultiplier, 1800);
+      animateRailBy(-deltaPx * tokens.figures.wheelTravelMultiplier, 1300);
       return true;
     },
     [
       animateRailBy,
+      engageRail,
       mode,
       pauseAutoSlide,
       tokens.figures.interactionPauseMs,
@@ -393,22 +444,26 @@ export function FiguresIndex() {
     };
   }, [getNormalizedWheelDelta, processWheelDelta]);
 
-  const handlePointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
-    if (mode !== "grid" || !railRef.current) {
-      return;
-    }
+  const handlePointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (mode !== "grid" || !railRef.current) {
+        return;
+      }
 
-    pauseAutoSlide(tokens.figures.interactionPauseMs);
-    stopOffsetAnimation();
-    dragStateRef.current = {
-      isDown: true,
-      startX: event.clientX,
-      offset: offsetRef.current
-    };
-    hasDraggedRef.current = false;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.currentTarget.classList.add("is-drag");
-  }, [mode, pauseAutoSlide, stopOffsetAnimation, tokens.figures.interactionPauseMs]);
+      engageRail();
+      pauseAutoSlide(tokens.figures.interactionPauseMs);
+      stopOffsetAnimation();
+      dragStateRef.current = {
+        isDown: true,
+        startX: event.clientX,
+        offset: offsetRef.current
+      };
+      hasDraggedRef.current = false;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.classList.add("is-drag");
+    },
+    [engageRail, mode, pauseAutoSlide, stopOffsetAnimation, tokens.figures.interactionPauseMs]
+  );
 
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
@@ -423,10 +478,20 @@ export function FiguresIndex() {
         hasDraggedRef.current = true;
       }
 
+      engageRail();
       pauseAutoSlide(tokens.figures.interactionPauseMs);
-      animateRailTo(dragState.offset + distance * tokens.figures.dragTravelMultiplier, 650);
+      offsetRef.current = dragState.offset + distance * tokens.figures.dragTravelMultiplier;
+      targetOffsetRef.current = offsetRef.current;
+      syncFigurePositions();
     },
-    [animateRailTo, mode, pauseAutoSlide, tokens.figures.dragTravelMultiplier, tokens.figures.interactionPauseMs]
+    [
+      engageRail,
+      mode,
+      pauseAutoSlide,
+      syncFigurePositions,
+      tokens.figures.dragTravelMultiplier,
+      tokens.figures.interactionPauseMs
+    ]
   );
 
   const stopDrag = useCallback((event: PointerEvent<HTMLDivElement>) => {
@@ -438,10 +503,13 @@ export function FiguresIndex() {
     }
   }, [pauseAutoSlide, tokens.figures.interactionPauseMs]);
 
-  const handleFigureEnter = useCallback((figure: FigureItem) => {
-    setActiveFigureId(figure.id);
-    setIsHoveringFigure(true);
-  }, []);
+  const handleFigureEnter = useCallback(
+    (figure: FigureItem) => {
+      setActiveFigure(figure.id);
+      setIsHoveringFigure(true);
+    },
+    [setActiveFigure]
+  );
 
   const handleFigureLeave = useCallback(() => {
     setIsHoveringFigure(false);
@@ -463,6 +531,7 @@ export function FiguresIndex() {
       ref={sectionRef}
       className="figures-index"
       data-nav={mode}
+      data-active={isRailEngaged ? "true" : "false"}
       data-text={figureText}
       aria-label="Scale figures reference gallery"
       style={
@@ -481,6 +550,7 @@ export function FiguresIndex() {
               onClick={() => {
                 setMode(viewMode);
                 setIsHoveringFigure(false);
+                setHasRailInteraction(false);
               }}
             >
               {viewMode === "grid" ? "Grid" : "Index"}
