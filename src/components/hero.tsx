@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type WheelEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { SITE_CONFIG, type HeroSlide } from "@/data/site-config";
 import { useMotion } from "@/context/motion-context";
 
@@ -24,6 +24,7 @@ export function Hero({ onNavigate }: HeroProps) {
   const prevClearTimerRef = useRef<number | null>(null);
   const autoTimerRef = useRef<number | null>(null);
   const wheelResetTimerRef = useRef<number | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
   const wheelAccumulatorRef = useRef(0);
   const wheelDirectionRef = useRef<-1 | 0 | 1>(0);
 
@@ -144,12 +145,12 @@ export function Hero({ onNavigate }: HeroProps) {
   }, [clearAutoTimer, clearLockTimer, clearPrevTimer, clearWheelResetTimer]);
 
   const getNormalizedWheelDelta = useCallback(
-    (event: WheelEvent<HTMLElement>) => {
-      let deltaPx = event.deltaY + event.deltaX;
+    (deltaX: number, deltaY: number, deltaMode: number) => {
+      let deltaPx = deltaY + deltaX;
 
-      if (event.deltaMode === 1) {
+      if (deltaMode === 1) {
         deltaPx *= heroPreset.wheelLineStepPx;
-      } else if (event.deltaMode === 2) {
+      } else if (deltaMode === 2) {
         deltaPx *= window.innerHeight;
       }
 
@@ -158,18 +159,15 @@ export function Hero({ onNavigate }: HeroProps) {
     [heroPreset.wheelClampPx, heroPreset.wheelLineStepPx]
   );
 
-  const handleWheel = useCallback(
-    (event: WheelEvent<HTMLElement>) => {
+  const processWheelDelta = useCallback(
+    (deltaPx: number) => {
       if (uiState.isLoading || uiState.isNavOpen || lockSwitch) {
-        return;
+        return false;
       }
 
-      const deltaPx = getNormalizedWheelDelta(event);
       if (Math.abs(deltaPx) < 1) {
-        return;
+        return false;
       }
-
-      event.preventDefault();
 
       const direction = deltaPx > 0 ? 1 : -1;
       const magnitude = Math.abs(deltaPx);
@@ -183,7 +181,7 @@ export function Hero({ onNavigate }: HeroProps) {
       if (magnitude >= heroPreset.wheelImmediatePx) {
         resetWheelAccumulator();
         activateSlide(direction > 0 ? nextIndex : previousIndex);
-        return;
+        return true;
       }
 
       clearWheelResetTimer();
@@ -193,16 +191,16 @@ export function Hero({ onNavigate }: HeroProps) {
       }, heroPreset.wheelResetMs);
 
       if (wheelAccumulatorRef.current < heroPreset.wheelTriggerPx) {
-        return;
+        return true;
       }
 
       resetWheelAccumulator();
       activateSlide(direction > 0 ? nextIndex : previousIndex);
+      return true;
     },
     [
       activateSlide,
       clearWheelResetTimer,
-      getNormalizedWheelDelta,
       heroPreset.wheelResetMs,
       heroPreset.wheelImmediatePx,
       heroPreset.wheelTriggerPx,
@@ -215,8 +213,34 @@ export function Hero({ onNavigate }: HeroProps) {
     ]
   );
 
+  useEffect(() => {
+    const heroNode = heroRef.current;
+    if (!heroNode) {
+      return;
+    }
+
+    const nativeHandler = (event: globalThis.WheelEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node) || !heroNode.contains(target)) {
+        return;
+      }
+
+      const deltaPx = getNormalizedWheelDelta(event.deltaX, event.deltaY, event.deltaMode);
+      if (!processWheelDelta(deltaPx)) {
+        return;
+      }
+
+      event.preventDefault();
+    };
+
+    heroNode.addEventListener("wheel", nativeHandler, { passive: false });
+    return () => {
+      heroNode.removeEventListener("wheel", nativeHandler);
+    };
+  }, [getNormalizedWheelDelta, processWheelDelta]);
+
   return (
-    <section id="top" className="hero" aria-label="Hero showcase" onWheel={handleWheel}>
+    <section id="top" ref={heroRef} className="hero" aria-label="Hero showcase">
       <div className="hero__slides" style={{ "--hero-speed": `${SITE_CONFIG.heroSpeedSeconds}s` } as CSSProperties}>
         {heroSlides.map((slide, index) => {
           const isActive = index === uiState.activeHeroIndex;

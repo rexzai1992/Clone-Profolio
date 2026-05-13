@@ -9,8 +9,7 @@ import {
   useState,
   type CSSProperties,
   type MouseEvent,
-  type PointerEvent,
-  type WheelEvent
+  type PointerEvent
 } from "react";
 import { SITE_CONFIG, type FigureItem } from "@/data/site-config";
 import { useMotion } from "@/context/motion-context";
@@ -82,13 +81,13 @@ export function FiguresIndex() {
   const figureText = getFigureTextColor(activeFigure, isHoveringFigure, mode);
 
   const getNormalizedWheelDelta = useCallback(
-    (event: WheelEvent<HTMLElement>) => {
-      const rawDelta = event.deltaY + event.deltaX;
+    (deltaX: number, deltaY: number, deltaMode: number) => {
+      const rawDelta = deltaY + deltaX;
       let deltaPx = rawDelta;
 
-      if (event.deltaMode === 1) {
+      if (deltaMode === 1) {
         deltaPx *= tokens.figures.wheelLineStepPx;
-      } else if (event.deltaMode === 2) {
+      } else if (deltaMode === 2) {
         deltaPx *= window.innerHeight;
       }
 
@@ -349,30 +348,50 @@ export function FiguresIndex() {
     };
   }, [isReducedMotion, mode, moveRailBy, tokens.figures.autoDriftPxPerSec, uiState.isNavOpen]);
 
-  const handleWheel = useCallback(
-    (event: WheelEvent<HTMLElement>) => {
-      if (mode !== "grid") {
-        return;
+  const processWheelDelta = useCallback(
+    (deltaPx: number) => {
+      if (mode !== "grid" || Math.abs(deltaPx) < 0.5) {
+        return false;
       }
 
-      const deltaPx = getNormalizedWheelDelta(event);
-      if (Math.abs(deltaPx) < 0.5) {
-        return;
-      }
-
-      event.preventDefault();
       pauseAutoSlide(tokens.figures.interactionPauseMs);
       animateRailBy(-deltaPx * tokens.figures.wheelTravelMultiplier, 1800);
+      return true;
     },
     [
       animateRailBy,
-      getNormalizedWheelDelta,
       mode,
       pauseAutoSlide,
       tokens.figures.interactionPauseMs,
       tokens.figures.wheelTravelMultiplier
     ]
   );
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+
+    const nativeWheelHandler = (event: globalThis.WheelEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node) || !section.contains(target)) {
+        return;
+      }
+
+      const deltaPx = getNormalizedWheelDelta(event.deltaX, event.deltaY, event.deltaMode);
+      if (!processWheelDelta(deltaPx)) {
+        return;
+      }
+
+      event.preventDefault();
+    };
+
+    section.addEventListener("wheel", nativeWheelHandler, { passive: false });
+    return () => {
+      section.removeEventListener("wheel", nativeWheelHandler);
+    };
+  }, [getNormalizedWheelDelta, processWheelDelta]);
 
   const handlePointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
     if (mode !== "grid" || !railRef.current) {
@@ -446,7 +465,6 @@ export function FiguresIndex() {
       data-nav={mode}
       data-text={figureText}
       aria-label="Scale figures reference gallery"
-      onWheel={handleWheel}
       style={
         {
           "--figure-character": figureCharacter,
