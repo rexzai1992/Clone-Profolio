@@ -66,42 +66,42 @@ export interface HeroTransitionPreset {
 
 export const MOTION_TOKENS: MotionTokens = {
   easing: {
-    primary: "cubic-bezier(0.23, 1, 0.32, 1)",
-    gentle: "cubic-bezier(0.075, 0.82, 0.165, 1)",
+    primary: "cubic-bezier(0.76, 0, 0.24, 1)",
+    gentle: "cubic-bezier(0.22, 1, 0.36, 1)",
     elastic: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     quickOut: "cubic-bezier(0.6, -0.28, 0.735, 0.045)"
   },
   durations: {
-    loaderDelayMs: 1800,
-    loaderMotionMs: 1500,
-    loaderTotalMs: 3500,
-    navOpenMs: 1000,
+    loaderDelayMs: 500,
+    loaderMotionMs: 1000,
+    loaderTotalMs: 3700,
+    navOpenMs: 800,
     navLayerStaggerMs: 200,
-    heroSwitchMs: 1400,
-    sectionRevealMs: 900
+    heroSwitchMs: 1200,
+    sectionRevealMs: 700
   },
   skew: {
-    mobileDeg: 6,
-    desktopDeg: 3
+    mobileDeg: 0,
+    desktopDeg: 0
   },
   blur: {
-    mobile: "10px",
-    desktop: "16px"
+    mobile: "8px",
+    desktop: "12px"
   },
   figures: {
-    wheelTravelMultiplier: 3.4,
-    dragTravelMultiplier: 2.8,
+    wheelTravelMultiplier: 2.8,
+    dragTravelMultiplier: 2.3,
     wheelLineStepPx: 16,
-    wheelClampPx: 64,
-    autoDriftPxPerSec: 42,
-    interactionPauseMs: 2400
+    wheelClampPx: 56,
+    autoDriftPxPerSec: 32,
+    interactionPauseMs: 1800
   }
 };
 
 export const LOADER_PRESET: LoaderPreset = {
-  maskSteps: [0, 46, 100],
-  bubbleSteps: [0, 0, 240],
-  overlayFrom: 0.22,
+  maskSteps: [0, 22, 100],
+  bubbleSteps: [0, 6, 200],
+  overlayFrom: 1,
   overlayTo: 0,
   stageDelayMs: MOTION_TOKENS.durations.loaderDelayMs,
   motionMs: MOTION_TOKENS.durations.loaderMotionMs,
@@ -109,16 +109,16 @@ export const LOADER_PRESET: LoaderPreset = {
 };
 
 export const HERO_TRANSITION_PRESET: HeroTransitionPreset = {
-  autoCycleMs: 5000,
+  autoCycleMs: 4600,
   switchLockMs: MOTION_TOKENS.durations.heroSwitchMs,
-  textStaggerMs: 120,
-  imageScaleFrom: 1.08,
+  textStaggerMs: 90,
+  imageScaleFrom: 1.04,
   imageScaleTo: 1,
-  wheelTriggerPx: 120,
+  wheelTriggerPx: 92,
   wheelImmediatePx: 96,
   wheelLineStepPx: 16,
-  wheelClampPx: 108,
-  wheelResetMs: 760
+  wheelClampPx: 96,
+  wheelResetMs: 620
 };
 
 export const DEFAULT_UI_STATE: UIState = {

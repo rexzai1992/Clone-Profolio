@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { SITE_CONFIG, type PortfolioItem } from "@/data/site-config";
+import { ImageReveal } from "@/components/image-reveal";
 
 export type PageSectionId = "featured" | "games" | "dev" | "about" | "contact";
 
@@ -8,13 +10,46 @@ function shouldRender(only: PageSectionId | undefined, sectionId: PageSectionId)
   return !only || only === sectionId;
 }
 
-function PortfolioCard({ item }: { item: PortfolioItem }) {
+const sectionViewport = { once: true, amount: 0.2, margin: "0px 0px -10% 0px" };
+const EASE_SOFT = [0.22, 1, 0.36, 1] as const;
+
+function sectionTitleMotion(delay = 0) {
+  return {
+    initial: { opacity: 0, y: 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: sectionViewport,
+    transition: { duration: 0.65, delay, ease: EASE_SOFT }
+  };
+}
+
+function PortfolioCard({ item, index }: { item: PortfolioItem; index: number }) {
   return (
-    <article className="portfolio-card" data-type={item.type} data-inview>
+    <motion.article
+      className="portfolio-card"
+      data-type={item.type}
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={sectionViewport}
+      transition={{
+        duration: 0.65,
+        delay: index * 0.12,
+        ease: EASE_SOFT
+      }}
+    >
       <div className="portfolio-card__media">
-        <img src={item.imageSrc} alt={item.imageAlt} loading="lazy" />
+        <ImageReveal
+          src={item.imageSrc}
+          alt={item.imageAlt}
+          width={1280}
+          height={720}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          wrapperClassName="portfolio-card__image-wrap"
+          imageClassName="portfolio-card__image"
+          delay={0.06 + index * 0.08}
+        />
       </div>
       <div className="portfolio-card__body">
+        <p className="portfolio-card__label">{`${(index + 1).toString().padStart(2, "0")} / ${item.type}`}</p>
         <h3>{item.title}</h3>
         <p>{item.summary}</p>
         <ul>
@@ -24,7 +59,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
         </ul>
         <button type="button">{item.cta}</button>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -32,71 +67,95 @@ export function PageSections({ only }: { only?: PageSectionId }) {
   return (
     <>
       {shouldRender(only, "featured") ? (
-        <section id="featured" className="section section--featured" data-inview>
+        <section id="featured" className="section section--featured">
           <header className="section__header">
-            <p className="section__kicker">Featured</p>
-            <h2>Signature Work</h2>
+            <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
+              Featured
+            </motion.p>
+            <motion.h2 {...sectionTitleMotion(0.12)}>Signature Work</motion.h2>
           </header>
           <div className="section__grid section__grid--2">
-            {SITE_CONFIG.featured.map((item) => (
-              <PortfolioCard item={item} key={item.id} />
+            {SITE_CONFIG.featured.map((item, index) => (
+              <PortfolioCard item={item} key={item.id} index={index} />
             ))}
           </div>
         </section>
       ) : null}
 
       {shouldRender(only, "games") ? (
-        <section id="games" className="section" data-inview>
+        <section id="games" className="section">
           <header className="section__header">
-            <p className="section__kicker">Game Projects</p>
-            <h2>Playable Direction</h2>
+            <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
+              Game Projects
+            </motion.p>
+            <motion.h2 {...sectionTitleMotion(0.12)}>Playable Direction</motion.h2>
           </header>
           <div className="section__grid section__grid--2">
-            {SITE_CONFIG.games.map((item) => (
-              <PortfolioCard item={item} key={item.id} />
+            {SITE_CONFIG.games.map((item, index) => (
+              <PortfolioCard item={item} key={item.id} index={index} />
             ))}
           </div>
         </section>
       ) : null}
 
       {shouldRender(only, "dev") ? (
-        <section id="dev" className="section" data-inview>
+        <section id="dev" className="section">
           <header className="section__header">
-            <p className="section__kicker">Dev Projects</p>
-            <h2>Production Engineering</h2>
+            <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
+              Dev Projects
+            </motion.p>
+            <motion.h2 {...sectionTitleMotion(0.12)}>Production Engineering</motion.h2>
           </header>
           <div className="section__grid section__grid--2">
-            {SITE_CONFIG.devs.map((item) => (
-              <PortfolioCard item={item} key={item.id} />
+            {SITE_CONFIG.devs.map((item, index) => (
+              <PortfolioCard item={item} key={item.id} index={index} />
             ))}
           </div>
         </section>
       ) : null}
 
       {shouldRender(only, "about") ? (
-        <section id="about" className="section section--about" data-inview>
+        <section id="about" className="section section--about">
           <header className="section__header">
-            <p className="section__kicker">About Izzul</p>
-            <h2>Cinematic UX with delivery-first engineering.</h2>
+            <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
+              About Izzul
+            </motion.p>
+            <motion.h2 {...sectionTitleMotion(0.12)}>
+              Cinematic UX with delivery-first engineering.
+            </motion.h2>
           </header>
-          <p className="section__lead">
+          <motion.p
+            className="section__lead"
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={sectionViewport}
+            transition={{ duration: 0.65, delay: 0.14, ease: EASE_SOFT }}
+          >
             Kaynx1 is the portfolio direction for {SITE_CONFIG.ownerName}. This phase keeps a high-fidelity
-            motion language inspired by the reference and leaves media slots ready for your own visuals.
-          </p>
+            motion language inspired by your reference and leaves media slots ready for your own visuals.
+          </motion.p>
         </section>
       ) : null}
 
       {shouldRender(only, "contact") ? (
-        <section id="contact" className="section section--contact" data-inview>
+        <section id="contact" className="section section--contact">
           <header className="section__header">
-            <p className="section__kicker">Contact</p>
-            <h2>Let&apos;s build something serious.</h2>
+            <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
+              Contact
+            </motion.p>
+            <motion.h2 {...sectionTitleMotion(0.12)}>Let&apos;s build something serious.</motion.h2>
           </header>
-          <div className="contact-panel">
+          <motion.div
+            className="contact-panel"
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={sectionViewport}
+            transition={{ duration: 0.6, delay: 0.1, ease: EASE_SOFT }}
+          >
             <p>Email placeholder</p>
             <p>Discord placeholder</p>
             <p>Location placeholder</p>
-          </div>
+          </motion.div>
         </section>
       ) : null}
     </>

@@ -1,7 +1,9 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import type { CSSProperties } from "react";
 import { SITE_CONFIG, type HeroSlide, type NavItem } from "@/data/site-config";
+import { ImageReveal } from "@/components/image-reveal";
 
 interface NavigationOverlayProps {
   navItems: NavItem[];
@@ -13,93 +15,93 @@ interface NavigationOverlayProps {
   onToggleDoor: () => void;
 }
 
-function MotionWord({ text }: { text: string }) {
-  return (
-    <span className="nav-overlay__word" aria-label={text}>
-      {Array.from(text).map((letter, index) => (
-        <span key={`${letter}-${index}`} style={{ "--letter": index } as CSSProperties} aria-hidden="true">
-          {letter === " " ? "\u00a0" : letter}
-        </span>
-      ))}
-    </span>
-  );
-}
-
 export function NavigationOverlay({
   navItems,
   isNavOpen,
   isDoorOpen,
   activeSlide,
   onNavigate,
+  onClose,
   onToggleDoor
 }: NavigationOverlayProps) {
   return (
-    <aside className="nav-overlay" aria-hidden={!isNavOpen}>
-      <div className="nav-overlay__bg" />
-
-      <div className="nav-overlay__inner">
-        <div className="nav-overlay__list-panel">
-          <p className="nav-overlay__top">Top</p>
-          <ul className="nav-overlay__main-list">
-            {navItems.map((item, index) => (
-              <li key={item.id} style={{ "--stagger": index } as CSSProperties}>
-                <a
-                  href={item.href}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    onNavigate(item.href);
-                  }}
-                >
-                  <MotionWord text={item.label} />
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          <ul className="nav-overlay__sub-list">
-            <li>
-              <a href="/contact" onClick={(event) => {
-                event.preventDefault();
-                onNavigate("/contact");
-              }}>
-                <MotionWord text={`Work with ${SITE_CONFIG.ownerName}`} />
-              </a>
-            </li>
-            <li>
-              <a href="/about" onClick={(event) => {
-                event.preventDefault();
-                onNavigate("/about");
-              }}>
-                <MotionWord text={`About ${SITE_CONFIG.brandName}`} />
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="nav-overlay__door-panel">
-          <div className="nav-overlay__door-info">
-            <h3>{activeSlide.title}</h3>
-            <p>{activeSlide.subtitle}</p>
-          </div>
-          <div
-            className="nav-overlay__door-image"
-            style={{
-              "--door-a": activeSlide.theme.bgA,
-              "--door-b": activeSlide.theme.bgB
-            } as CSSProperties}
+    <AnimatePresence>
+      {isNavOpen ? (
+        <motion.aside
+          className={`nav-overlay ${isDoorOpen ? "is-door-open" : ""}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden={!isNavOpen}
+        >
+          <motion.div
+            className="nav-overlay__panel"
+            initial={{ y: 18 }}
+            animate={{ y: 0 }}
+            exit={{ y: -12 }}
+            transition={{ duration: 0.56, ease: [0.76, 0, 0.24, 1] }}
+            style={
+              {
+                "--overlay-a": activeSlide.theme.bgA,
+                "--overlay-b": activeSlide.theme.bgB
+              } as CSSProperties
+            }
           >
-            <img src={activeSlide.imageSrc} alt={activeSlide.imageAlt} />
-            <div className="nav-overlay__door-orb" />
-          </div>
-          <button className="nav-overlay__door-cta" type="button" onClick={() => onNavigate(activeSlide.ctaHref)}>
-            {activeSlide.cta}
-          </button>
-        </div>
-      </div>
+            <button className="nav-overlay__close" type="button" onClick={onClose} aria-label="Close navigation">
+              Close
+            </button>
 
-      <button className="nav-overlay__mobile-door-toggle" type="button" onClick={onToggleDoor}>
-        <span className="sr-only">Toggle door panel</span>
-      </button>
-    </aside>
+            <div className="nav-overlay__col nav-overlay__col--left">
+              <p className="nav-overlay__caption">{SITE_CONFIG.brandName}</p>
+              <ul>
+                {navItems.map((item, index) => (
+                  <motion.li
+                    key={item.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.08 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <a
+                      href={item.href}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        onNavigate(item.href);
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="nav-overlay__col nav-overlay__col--right">
+              <ImageReveal
+                src={activeSlide.imageSrc}
+                alt={activeSlide.imageAlt}
+                width={920}
+                height={1100}
+                sizes="(max-width: 1024px) 100vw, 44vw"
+                revealOnView={false}
+                wrapperClassName="nav-overlay__preview"
+                imageClassName="nav-overlay__preview-img"
+              />
+              <div className="nav-overlay__info">
+                <strong>{activeSlide.title}</strong>
+                <p>{activeSlide.subtitle}</p>
+                <button type="button" onClick={() => onNavigate(activeSlide.ctaHref)}>
+                  {activeSlide.cta}
+                </button>
+                <button className="nav-overlay__door-btn" type="button" onClick={onToggleDoor}>
+                  Toggle focus mode
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.aside>
+      ) : null}
+    </AnimatePresence>
   );
 }
+
