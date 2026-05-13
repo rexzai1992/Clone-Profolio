@@ -118,10 +118,10 @@ export function PageSections({ only }: { only?: PageSectionId }) {
         <section id="about" className="section section--about">
           <header className="section__header">
             <motion.p className="section__kicker" {...sectionTitleMotion(0.06)}>
-              About Izzul
+              About mimeyoi
             </motion.p>
             <motion.h2 {...sectionTitleMotion(0.12)}>
-              Cinematic UX with delivery-first engineering.
+              Figure brand crafting detailed collectible worlds.
             </motion.h2>
           </header>
           <motion.p
@@ -131,8 +131,8 @@ export function PageSections({ only }: { only?: PageSectionId }) {
             viewport={sectionViewport}
             transition={{ duration: 0.65, delay: 0.14, ease: EASE_SOFT }}
           >
-            Kaynx1 is the portfolio direction for {SITE_CONFIG.ownerName}. This phase keeps a high-fidelity
-            motion language inspired by your reference and leaves media slots ready for your own visuals.
+            MIMEYOI presents premium scale figures with cinematic presentation. This page keeps the
+            reference motion tone and minimalist structure for product-focused storytelling.
           </motion.p>
         </section>
       ) : null}

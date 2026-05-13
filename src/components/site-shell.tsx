@@ -211,7 +211,6 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
       <AutoHideHeader
         navItems={SITE_CONFIG.navItems}
         isNavOpen={uiState.isNavOpen}
-        showClock={!uiState.isLoading}
         onToggleNav={toggleNav}
         onNavigate={navigate}
       />

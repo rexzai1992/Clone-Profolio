@@ -3,15 +3,15 @@
 import {
   AnimatePresence,
   motion,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   useMotionValue
 } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent } from "react";
 import { type HeroSlide } from "@/data/site-config";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ImageReveal } from "@/components/image-reveal";
 
 interface HeroSlideshowProps {
@@ -30,20 +30,22 @@ function formatSlideNumber(value: number) {
 function MotionWords({
   text,
   delay = 0,
-  duration = 0.5
+  duration = 0.5,
+  canAnimate = true
 }: {
   text: string;
   delay?: number;
   duration?: number;
+  canAnimate?: boolean;
 }) {
   return (
     <span className="motion-words" aria-label={text}>
       {text.split(" ").map((word, index) => (
         <motion.span
           key={`${word}-${index}`}
-          initial={{ opacity: 0, y: 12 }}
+          initial={canAnimate ? { opacity: 0, y: 12 } : false}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
+          exit={canAnimate ? { opacity: 0, y: -12 } : { opacity: 0 }}
           transition={{
             duration,
             delay: delay + index * 0.04,
@@ -68,7 +70,39 @@ export function HeroSlideshow({
   onChange
 }: HeroSlideshowProps) {
   const reducedMotion = useReducedMotion();
+  const [hasMounted, setHasMounted] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
+  const [stamp, setStamp] = useState({ month: "---", year: "----" });
   const sectionRef = useRef<HTMLElement | null>(null);
+  const canAnimate = hasMounted && hasEntered && !reducedMotion;
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMounted) {
+      return;
+    }
+
+    const raf = window.requestAnimationFrame(() => {
+      setHasEntered(true);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+    };
+  }, [hasMounted]);
+
+  useEffect(() => {
+    if (!hasMounted) {
+      return;
+    }
+
+    const now = new Date();
+    const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(now);
+    setStamp({ month, year: String(now.getFullYear()) });
+  }, [hasMounted]);
 
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -83,6 +117,11 @@ export function HeroSlideshow({
 
   const activeSlide = slides[activeIndex];
   const totalSlides = slides.length;
+  const heroPreState = { opacity: 0.6, scale: 1.06, clipPath: "circle(12% at 50% 50%)" };
+  const heroFinalState = { opacity: 1, scale: 1, clipPath: "circle(140% at 50% 50%)" };
+  const textPreState = { opacity: 0, y: 16 };
+  const textFinalState = { opacity: 1, y: 0 };
+  const showFinalState = reducedMotion || hasEntered;
 
   const goTo = useCallback(
     (nextIndex: number) => {
@@ -100,18 +139,14 @@ export function HeroSlideshow({
     goTo(activeIndex + 1);
   }, [activeIndex, goTo]);
 
-  const goPrev = useCallback(() => {
-    goTo(activeIndex - 1);
-  }, [activeIndex, goTo]);
-
   useEffect(() => {
-    if (!ready || reducedMotion || totalSlides < 2) {
+    if (!ready || !hasMounted || reducedMotion || totalSlides < 2) {
       return;
     }
 
     const timer = window.setTimeout(goNext, slideDurationMs);
     return () => window.clearTimeout(timer);
-  }, [activeIndex, goNext, ready, reducedMotion, slideDurationMs, totalSlides]);
+  }, [activeIndex, goNext, hasMounted, ready, reducedMotion, slideDurationMs, totalSlides]);
 
   const onPointerMove = useCallback(
     (event: PointerEvent<HTMLElement>) => {
@@ -152,10 +187,10 @@ export function HeroSlideshow({
           <motion.article
             key={activeSlide.id}
             className="hero-slideshow__slide"
-            initial={reducedMotion ? false : { opacity: 0.6, scale: 1.06, clipPath: "circle(12% at 50% 50%)" }}
-            animate={{ opacity: 1, scale: 1, clipPath: "circle(140% at 50% 50%)" }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0.32, scale: 0.97, filter: "blur(2px)" }}
-            transition={{ duration: reducedMotion ? 0.15 : 1.15, ease: [0.76, 0, 0.24, 1] }}
+            initial={canAnimate ? heroPreState : false}
+            animate={showFinalState ? heroFinalState : heroPreState}
+            exit={canAnimate ? { opacity: 0.32, scale: 0.97, filter: "blur(2px)" } : { opacity: 0 }}
+            transition={{ duration: canAnimate ? 1.15 : 0.15, ease: [0.76, 0, 0.24, 1] }}
             style={{ "--hero-bg-a": activeSlide.theme.bgA, "--hero-bg-b": activeSlide.theme.bgB } as CSSProperties}
           >
             <motion.div className="hero-slideshow__image-layer" style={{ x: parallaxX, y: parallaxY }}>
@@ -179,19 +214,19 @@ export function HeroSlideshow({
           <motion.div
             key={`text-${activeSlide.id}`}
             className="hero-slideshow__text-block"
-            initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -18 }}
-            transition={{ duration: reducedMotion ? 0.15 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            initial={canAnimate ? textPreState : false}
+            animate={showFinalState ? textFinalState : textPreState}
+            exit={canAnimate ? { opacity: 0, y: -18 } : { opacity: 0 }}
+            transition={{ duration: canAnimate ? 0.7 : 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
             <p className="hero-slideshow__status">
-              <MotionWords text={activeSlide.status} delay={0.1} duration={0.55} />
+              <MotionWords text={activeSlide.status} delay={0.1} duration={0.55} canAnimate={canAnimate} />
             </p>
             <h1 className="hero-slideshow__title">
-              <MotionWords text={activeSlide.title} delay={0.16} duration={0.7} />
+              <MotionWords text={activeSlide.title} delay={0.16} duration={0.7} canAnimate={canAnimate} />
             </h1>
             <p className="hero-slideshow__subtitle">
-              <MotionWords text={activeSlide.subtitle} delay={0.24} duration={0.56} />
+              <MotionWords text={activeSlide.subtitle} delay={0.24} duration={0.56} canAnimate={canAnimate} />
             </p>
             <button className="hero-slideshow__cta" type="button" onClick={() => onNavigate(activeSlide.ctaHref)}>
               {activeSlide.cta}
@@ -200,6 +235,10 @@ export function HeroSlideshow({
         </AnimatePresence>
 
         <div className="hero-slideshow__meta">
+          <p className="hero-slideshow__stamp">
+            <span>{stamp.month}</span>
+            <span>&copy;{stamp.year}</span>
+          </p>
           <p>{activeSlide.detailA}</p>
           <p>{activeSlide.detailB}</p>
           <span>{slideLabel}</span>
@@ -214,9 +253,9 @@ export function HeroSlideshow({
               key={`progress-${activeSlide.id}-${ready}`}
               className="hero-slideshow__progress-fill"
               initial={{ scaleX: 0 }}
-              animate={{ scaleX: ready && !reducedMotion ? 1 : 0 }}
+              animate={{ scaleX: ready && canAnimate ? 1 : 0 }}
               transition={{
-                duration: reducedMotion ? 0.01 : slideDurationMs / 1000,
+                duration: canAnimate ? slideDurationMs / 1000 : 0.01,
                 ease: "linear"
               }}
             />
@@ -224,12 +263,19 @@ export function HeroSlideshow({
         </div>
 
         <div className="hero-slideshow__controls" role="tablist" aria-label="Hero slides">
-          <button type="button" onClick={goPrev} aria-label="Previous slide">
-            Prev
-          </button>
-          <button type="button" onClick={goNext} aria-label="Next slide">
-            Next
-          </button>
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              className={index === activeIndex ? "is-active" : ""}
+              onClick={() => goTo(index)}
+            >
+              <strong>{slide.title}</strong>
+              <small>{slide.subtitle.split("·")[0]?.trim() ?? slide.status}</small>
+            </button>
+          ))}
         </div>
       </div>
     </section>

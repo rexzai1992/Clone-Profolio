@@ -1,9 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent, WheelEvent } from "react";
 import type { FigureItem } from "@/data/site-config";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ImageReveal } from "@/components/image-reveal";
 
 interface InfiniteCarouselProps {

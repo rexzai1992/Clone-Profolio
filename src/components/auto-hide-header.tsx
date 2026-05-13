@@ -3,12 +3,10 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { SITE_CONFIG, type NavItem } from "@/data/site-config";
-import { LiveClock } from "@/components/live-clock";
 
 interface AutoHideHeaderProps {
   navItems: NavItem[];
   isNavOpen: boolean;
-  showClock: boolean;
   onToggleNav: () => void;
   onNavigate: (href: string) => void;
 }
@@ -16,7 +14,6 @@ interface AutoHideHeaderProps {
 export function AutoHideHeader({
   navItems,
   isNavOpen,
-  showClock,
   onToggleNav,
   onNavigate
 }: AutoHideHeaderProps) {
@@ -102,7 +99,7 @@ export function AutoHideHeader({
       </nav>
 
       <div className="auto-header__right">
-        <LiveClock show={showClock && !isNavOpen} />
+        <span className="auto-header__lang">JA</span>
         <button
           className="auto-header__menu"
           type="button"

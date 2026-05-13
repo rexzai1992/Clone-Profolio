@@ -12,9 +12,11 @@ function getNow() {
 }
 
 export function LiveClock({ show }: LiveClockProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const [time, setTime] = useState<Date>(() => getNow());
 
   useEffect(() => {
+    setIsMounted(true);
     const timer = window.setInterval(() => {
       setTime(getNow());
     }, 1000);
@@ -48,9 +50,8 @@ export function LiveClock({ show }: LiveClockProps) {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       aria-label="Current date and time"
     >
-      <span>{parts.clock}</span>
-      <small>{parts.date}</small>
+      <span>{isMounted ? parts.clock : "--:--:--"}</span>
+      <small>{isMounted ? parts.date : "---"}</small>
     </motion.div>
   );
 }
-

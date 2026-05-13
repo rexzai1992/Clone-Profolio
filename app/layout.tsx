@@ -19,8 +19,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Kaynx1 | Izzul",
-  description: "Kaynx1 game and dev portfolio with cinematic motion-first presentation."
+  title: "MIMEYOI",
+  description: "MIMEYOI scale figures with cinematic showcase motion."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
