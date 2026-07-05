@@ -6,6 +6,7 @@
     "app/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "worker-configuration.d.ts",
     "next.config.ts"
   ],
   "exclude": [

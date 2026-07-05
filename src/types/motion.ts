@@ -34,11 +34,16 @@ export interface MotionTokens {
 
 export interface UIState {
   isLoading: boolean;
+  isFirstLoadIntroDone: boolean;
   isNavOpen: boolean;
   isDoorOpen: boolean;
   isClockMode: boolean;
   activeHeroIndex: number;
   isTransitioning: boolean;
+  routeOverlayActive: boolean;
+  routeOverlayPhase: "idle" | "covering" | "covered" | "revealing";
+  routeOverlayFrom: string | null;
+  routeOverlayTo: string | null;
 }
 
 export interface LoaderPreset {
@@ -65,24 +70,25 @@ export interface HeroTransitionPreset {
 }
 
 export const MOTION_TOKENS: MotionTokens = {
+  // mimeyoi.co easing set
   easing: {
-    primary: "cubic-bezier(0.76, 0, 0.24, 1)",
-    gentle: "cubic-bezier(0.22, 1, 0.36, 1)",
+    primary: "cubic-bezier(0.785, 0.135, 0.15, 0.86)",
+    gentle: "cubic-bezier(0.23, 1, 0.32, 1)",
     elastic: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     quickOut: "cubic-bezier(0.6, -0.28, 0.735, 0.045)"
   },
   durations: {
-    loaderDelayMs: 500,
-    loaderMotionMs: 1000,
-    loaderTotalMs: 3700,
+    loaderDelayMs: 200,
+    loaderMotionMs: 1500,
+    loaderTotalMs: 3400,
     navOpenMs: 800,
     navLayerStaggerMs: 200,
-    heroSwitchMs: 1200,
+    heroSwitchMs: 1000,
     sectionRevealMs: 700
   },
   skew: {
-    mobileDeg: 0,
-    desktopDeg: 0
+    mobileDeg: 6,
+    desktopDeg: 3
   },
   blur: {
     mobile: "8px",
@@ -123,9 +129,14 @@ export const HERO_TRANSITION_PRESET: HeroTransitionPreset = {
 
 export const DEFAULT_UI_STATE: UIState = {
   isLoading: true,
+  isFirstLoadIntroDone: false,
   isNavOpen: false,
   isDoorOpen: false,
   isClockMode: false,
   activeHeroIndex: 0,
-  isTransitioning: false
+  isTransitioning: false,
+  routeOverlayActive: false,
+  routeOverlayPhase: "idle",
+  routeOverlayFrom: null,
+  routeOverlayTo: null
 };

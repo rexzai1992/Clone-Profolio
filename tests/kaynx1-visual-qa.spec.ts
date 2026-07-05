@@ -8,44 +8,41 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.goto("/", { waitUntil: "networkidle" });
     await page.waitForTimeout(3800);
     await expect(page.locator(".site-root")).not.toHaveClass(/is-loading/);
+    await expect(page.locator(".hero-slideshow")).toHaveAttribute("data-intro", "true");
     await page.screenshot({ path: "/tmp/kaynx1-home-after-loader.png", fullPage: false });
 
-    const firstHero = await page.locator(".hero__control.is-active strong").innerText();
+    const activeControl = page.locator(".hero-slideshow__control ._item.is-active ._title");
+    const firstHero = await activeControl.innerText();
     await page.waitForTimeout(5600);
-    const nextHero = await page.locator(".hero__control.is-active strong").innerText();
+    const nextHero = await activeControl.innerText();
     expect(nextHero).not.toBe(firstHero);
 
-    await page.locator(".hero").hover({ position: { x: 320, y: 360 }, force: true });
+    await page.locator(".hero-slideshow").hover({ position: { x: 320, y: 360 }, force: true });
     await page.mouse.wheel(0, 120);
-    await page.waitForTimeout(900);
-    const wheelHero = await page.locator(".hero__control.is-active strong").innerText();
+    await page.waitForTimeout(1300);
+    const wheelHero = await activeControl.innerText();
     expect(wheelHero).not.toBe(nextHero);
 
-    await page.locator(".site-header__toggle").click();
+    await page.locator(".auto-header__menu").click();
     await page.waitForTimeout(1150);
-    await expect(page.locator(".site-root")).toHaveClass(/is-nav/);
-    await expect(page.locator(".site-header__toggle")).toBeVisible();
+    await expect(page.locator(".site-root")).toHaveClass(/is-nav-open/);
+    await expect(page.locator(".nav-overlay")).toHaveClass(/is-open/);
     await page.screenshot({ path: "/tmp/kaynx1-nav-open.png", fullPage: false });
-
-    await page.locator(".site-header__toggle").hover();
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: "/tmp/kaynx1-nav-open-hover.png", fullPage: false });
   });
 
   test("mobile nav keeps close toggle and door switch visible", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "networkidle" });
     await page.waitForTimeout(3800);
-    await page.locator(".site-header__toggle").click();
+    await page.locator(".auto-header__menu").click();
     await page.waitForTimeout(1000);
-    await expect(page.locator(".site-root")).toHaveClass(/is-nav/);
-    await expect(page.locator(".site-header__toggle")).toBeVisible();
-    await expect(page.locator(".nav-overlay__mobile-door-toggle")).toBeVisible();
+    await expect(page.locator(".site-root")).toHaveClass(/is-nav-open/);
+    await expect(page.locator(".nav-overlay__close")).toBeVisible();
     await page.screenshot({ path: "/tmp/kaynx1-mobile-nav-open.png", fullPage: false });
 
-    await page.locator(".nav-overlay__mobile-door-toggle").click();
+    await page.locator(".nav-overlay__door-btn").click();
     await page.waitForTimeout(900);
-    await expect(page.locator(".site-root")).toHaveClass(/is-door/);
+    await expect(page.locator(".nav-overlay")).toHaveClass(/is-door-open/);
     await page.screenshot({ path: "/tmp/kaynx1-mobile-door-open.png", fullPage: false });
   });
 
@@ -55,7 +52,7 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.waitForTimeout(4200);
     await page.screenshot({ path: "/tmp/kaynx1-figures-grid.png", fullPage: false });
 
-    await page.locator(".figures-index__grid-item.is-active .figures-index__link").first().hover({ force: true });
+    await page.locator(".figures-index__grid-item.is-active .figures-index__image").first().hover({ force: true });
     await page.waitForTimeout(600);
     const figureBg = await page
       .locator(".figures-index")
@@ -78,7 +75,7 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.waitForTimeout(900);
     await page.mouse.move(20, 20);
     await page.waitForTimeout(11_200);
-    await expect(page.locator(".site-root")).toHaveClass(/is-clock/);
+    await expect(page.locator(".live-clock")).toHaveClass(/is-shown/);
     await page.screenshot({ path: "/tmp/kaynx1-figures-idle-clock.png", fullPage: false });
   });
 });

@@ -1,34 +1,28 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { SITE_CONFIG } from "@/data/site-config";
+import { NotFoundEffect } from "@/components/notfound-effect";
+import { r2Asset } from "@/data/assets";
+
+const NOTFOUND_IMAGE = r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/404_v4.jpg");
 
 export function ErrorPage() {
   return (
     <main className="error-page">
-      <motion.p
-        className="error-page__code"
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      >
-        404
-      </motion.p>
-
-      <motion.p
-        className="error-page__brand"
-        initial={{ opacity: 0, y: 8, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {SITE_CONFIG.brandName}
-      </motion.p>
-
-      <Link className="error-page__link" href="/">
-        Back to home
-      </Link>
+      <h1 className="error-page__title">
+        404 <br className="error-page__break" />
+        ERROR
+      </h1>
+      <div className="error-page__image" aria-hidden="true">
+        <Image src={NOTFOUND_IMAGE} alt="" fill sizes="100vw" priority />
+        <NotFoundEffect src={NOTFOUND_IMAGE} />
+      </div>
+      <div className="error-page__link">
+        <Link className="c-button" href="/">
+          <span>EXPLORE</span>
+        </Link>
+      </div>
     </main>
   );
 }
-

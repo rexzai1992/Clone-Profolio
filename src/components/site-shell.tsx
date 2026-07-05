@@ -2,18 +2,32 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Lenis from "lenis";
-import { useRouter } from "next/navigation";
-import { SITE_CONFIG } from "@/data/site-config";
+import { usePathname, useRouter } from "next/navigation";
 import { useMotion } from "@/context/motion-context";
+import { useSiteContent } from "@/context/site-content-context";
 import { AutoHideHeader } from "@/components/auto-hide-header";
 import { NavigationOverlay } from "@/components/nav-overlay";
 import { HeroSlideshow } from "@/components/hero-slideshow";
-import { Preloader } from "@/components/preloader";
 import { PageSections, type PageSectionId } from "@/components/sections";
 import { FiguresIndex } from "@/components/figures-index";
-import { PageTransition } from "@/components/page-transition";
+import { LiveClock } from "@/components/live-clock";
 
 type SitePage = "home" | "figures" | "portfolio";
+const FIGURES_IDLE_HIDE_DELAY_MS = 1200;
+const ROUTE_PUSH_DELAY_MS = 300;
+const FIGURE_DETAIL_PUSH_DELAY_MS = 0;
+const ROUTE_TRANSITION_MS = 760;
+const ROUTE_TRANSITION_CLEANUP_MS = 900;
+
+function normalizePath(path: string) {
+  if (!path) {
+    return "/";
+  }
+  if (path === "/") {
+    return "/";
+  }
+  return path.replace(/\/+$/, "");
+}
 
 interface SiteShellProps {
   page?: SitePage;
@@ -21,6 +35,7 @@ interface SiteShellProps {
 }
 
 export function SiteShell({ page = "home", section }: SiteShellProps) {
+  const { site } = useSiteContent();
   const {
     uiState,
     isReducedMotion,
@@ -28,15 +43,24 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
     closeNav,
     toggleDoor,
     setActiveHeroIndex,
-    triggerTransition
+    triggerTransition,
+    beginRouteOverlay,
+    revealRouteOverlay
   } = useMotion();
 
+  const pathname = usePathname();
   const router = useRouter();
   const routeTimerRef = useRef<number | null>(null);
+  const pendingHomeRouteRef = useRef<{ href: string; to: string; transitionTypes: string[] } | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+  const idleModeRef = useRef(false);
   const lenisRef = useRef<Lenis | null>(null);
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false);
+  const [isIdleMode, setIsIdleMode] = useState(false);
+  const isFiguresPage = page === "figures";
+  const introReady = uiState.isFirstLoadIntroDone;
 
-  const activeSlide = SITE_CONFIG.heroSlides[uiState.activeHeroIndex] ?? SITE_CONFIG.heroSlides[0];
+  const activeSlide = site.heroSlides[uiState.activeHeroIndex] ?? site.heroSlides[0];
 
   const rootClassName = useMemo(
     () =>
@@ -56,7 +80,9 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
       if (href.startsWith("/") && !href.includes("#")) {
         closeNav();
         const currentPath = window.location.pathname;
-        if (href === currentPath) {
+        const normalizedCurrentPath = normalizePath(currentPath);
+        const normalizedHref = normalizePath(href);
+        if (normalizedHref === normalizedCurrentPath) {
           lenisRef.current?.scrollTo(0, { immediate: isReducedMotion });
           return;
         }
@@ -64,18 +90,42 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
         if (routeTimerRef.current !== null) {
           window.clearTimeout(routeTimerRef.current);
         }
+        pendingHomeRouteRef.current = null;
+
+        const isFigureDetailRoute = /^\/figures\/[^/]+\/?$/.test(normalizedHref);
+        const isHomeToFiguresRoute = page === "home" && /^\/figures?(?:\/|$)/.test(normalizedHref);
+        const transitionTypes = isFigureDetailRoute ? ["figure-open"] : ["route-change"];
+        const pushDelay = isFigureDetailRoute ? FIGURE_DETAIL_PUSH_DELAY_MS : ROUTE_PUSH_DELAY_MS;
+        const pushRoute = () => {
+          router.push(href, { transitionTypes });
+        };
 
         if (isReducedMotion) {
-          router.push(href);
+          pushRoute();
           return;
         }
 
         setIsRouteTransitioning(true);
-        triggerTransition(800);
+        triggerTransition(ROUTE_TRANSITION_MS);
+        if (isHomeToFiguresRoute) {
+          beginRouteOverlay(normalizedCurrentPath, normalizedHref);
+          pendingHomeRouteRef.current = {
+            href,
+            to: normalizedHref,
+            transitionTypes
+          };
+          return;
+        }
+
+        if (pushDelay <= 0) {
+          pushRoute();
+          return;
+        }
+
         routeTimerRef.current = window.setTimeout(() => {
-          router.push(href);
+          pushRoute();
           routeTimerRef.current = null;
-        }, 380);
+        }, pushDelay);
         return;
       }
 
@@ -104,8 +154,156 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
 
       closeNav();
     },
-    [closeNav, isReducedMotion, router, triggerTransition]
+    [beginRouteOverlay, closeNav, isReducedMotion, page, router, triggerTransition]
   );
+
+  useEffect(() => {
+    const pendingRoute = pendingHomeRouteRef.current;
+    if (
+      isReducedMotion ||
+      !pendingRoute ||
+      !uiState.routeOverlayActive ||
+      uiState.routeOverlayPhase !== "covered" ||
+      normalizePath(uiState.routeOverlayTo ?? "") !== pendingRoute.to
+    ) {
+      return;
+    }
+
+    router.push(pendingRoute.href, { transitionTypes: pendingRoute.transitionTypes });
+    pendingHomeRouteRef.current = null;
+  }, [isReducedMotion, router, uiState.routeOverlayActive, uiState.routeOverlayPhase, uiState.routeOverlayTo]);
+
+  useEffect(() => {
+    if (
+      isReducedMotion ||
+      !uiState.routeOverlayActive ||
+      uiState.routeOverlayPhase !== "covered" ||
+      !uiState.routeOverlayTo
+    ) {
+      return;
+    }
+
+    const normalizedTarget = normalizePath(uiState.routeOverlayTo);
+    if (normalizePath(pathname) !== normalizedTarget) {
+      return;
+    }
+
+    if (normalizedTarget === "/figure" || normalizedTarget === "/figures") {
+      return;
+    }
+
+    const raf = window.requestAnimationFrame(() => {
+      revealRouteOverlay();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+    };
+  }, [
+    isReducedMotion,
+    pathname,
+    revealRouteOverlay,
+    uiState.routeOverlayActive,
+    uiState.routeOverlayPhase,
+    uiState.routeOverlayTo
+  ]);
+
+  useEffect(() => {
+    const prefetchTargets = new Set<string>();
+    site.navItems.forEach((item) => {
+      if (item.href.startsWith("/")) {
+        prefetchTargets.add(item.href);
+      }
+    });
+    site.heroSlides.forEach((slide) => {
+      if (slide.ctaHref.startsWith("/")) {
+        prefetchTargets.add(slide.ctaHref);
+      }
+    });
+
+    prefetchTargets.forEach((target) => {
+      router.prefetch(target);
+    });
+  }, [router, site.heroSlides, site.navItems]);
+
+  useEffect(() => {
+    if (uiState.activeHeroIndex >= site.heroSlides.length) {
+      setActiveHeroIndex(0);
+    }
+  }, [setActiveHeroIndex, site.heroSlides.length, uiState.activeHeroIndex]);
+
+  useEffect(() => {
+    idleModeRef.current = isIdleMode;
+  }, [isIdleMode]);
+
+  const clearIdleTimer = useCallback(() => {
+    if (idleTimerRef.current !== null) {
+      window.clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleIdle = useCallback(() => {
+    clearIdleTimer();
+    if (!isFiguresPage || uiState.isLoading || uiState.isNavOpen || isRouteTransitioning) {
+      return;
+    }
+
+    idleTimerRef.current = window.setTimeout(() => {
+      idleModeRef.current = true;
+      setIsIdleMode(true);
+      idleTimerRef.current = null;
+    }, FIGURES_IDLE_HIDE_DELAY_MS);
+  }, [clearIdleTimer, isFiguresPage, isRouteTransitioning, uiState.isLoading, uiState.isNavOpen]);
+
+  const markActive = useCallback(() => {
+    if (!isFiguresPage) {
+      return;
+    }
+
+    if (idleModeRef.current) {
+      idleModeRef.current = false;
+      setIsIdleMode(false);
+    }
+    scheduleIdle();
+  }, [isFiguresPage, scheduleIdle]);
+
+  useEffect(() => {
+    if (!isFiguresPage || uiState.isLoading || uiState.isNavOpen || isRouteTransitioning) {
+      idleModeRef.current = false;
+      setIsIdleMode(false);
+      clearIdleTimer();
+      return;
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        clearIdleTimer();
+        return;
+      }
+      markActive();
+    };
+
+    markActive();
+
+    window.addEventListener("pointerdown", markActive, { passive: true });
+    window.addEventListener("touchstart", markActive, { passive: true });
+    window.addEventListener("wheel", markActive, { passive: true });
+    window.addEventListener("scroll", markActive, { passive: true });
+    window.addEventListener("keydown", markActive);
+    window.addEventListener("pointermove", markActive, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      clearIdleTimer();
+      window.removeEventListener("pointerdown", markActive);
+      window.removeEventListener("touchstart", markActive);
+      window.removeEventListener("wheel", markActive);
+      window.removeEventListener("scroll", markActive);
+      window.removeEventListener("keydown", markActive);
+      window.removeEventListener("pointermove", markActive);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [clearIdleTimer, isFiguresPage, isRouteTransitioning, markActive, uiState.isLoading, uiState.isNavOpen]);
 
   useEffect(() => {
     if (isReducedMotion) {
@@ -122,6 +320,7 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
     });
 
     lenisRef.current = lenis;
+    Object.assign(window, { __kaynxLenis: lenis });
     let raf = 0;
     const onFrame = (time: number) => {
       lenis.raf(time);
@@ -133,6 +332,7 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
       window.cancelAnimationFrame(raf);
       lenis.destroy();
       lenisRef.current = null;
+      Object.assign(window, { __kaynxLenis: undefined });
     };
   }, [isReducedMotion]);
 
@@ -150,11 +350,13 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
 
   useEffect(() => {
     return () => {
+      clearIdleTimer();
       if (routeTimerRef.current !== null) {
         window.clearTimeout(routeTimerRef.current);
       }
+      pendingHomeRouteRef.current = null;
     };
-  }, []);
+  }, [clearIdleTimer]);
 
   useEffect(() => {
     if (!isRouteTransitioning) {
@@ -163,30 +365,42 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
 
     const timer = window.setTimeout(() => {
       setIsRouteTransitioning(false);
-    }, 820);
+    }, ROUTE_TRANSITION_CLEANUP_MS);
     return () => window.clearTimeout(timer);
   }, [isRouteTransitioning]);
 
   const pageContent = useMemo(() => {
     if (page === "figures") {
-      return <FiguresIndex />;
+      return <FiguresIndex onNavigate={navigate} />;
     }
 
     if (page === "portfolio") {
       return <PageSections only={section} />;
     }
 
-    return (
-      <HeroSlideshow
-        slides={SITE_CONFIG.heroSlides}
-        activeIndex={uiState.activeHeroIndex}
-        slideDurationMs={Math.round(SITE_CONFIG.heroSpeedSeconds * 1000)}
-        ready={!uiState.isLoading}
-        onChange={setActiveHeroIndex}
-        onNavigate={navigate}
-      />
-    );
-  }, [navigate, page, section, setActiveHeroIndex, uiState.activeHeroIndex, uiState.isLoading]);
+      return (
+        <HeroSlideshow
+          slides={site.heroSlides}
+          activeIndex={uiState.activeHeroIndex}
+          slideDurationMs={Math.round(site.heroSpeedSeconds * 1000)}
+          ready={!uiState.isLoading}
+          introReady={introReady}
+          isRouteExiting={isRouteTransitioning && page === "home"}
+          onChange={setActiveHeroIndex}
+          onNavigate={navigate}
+        />
+      );
+  }, [
+    introReady,
+    navigate,
+    page,
+    section,
+    setActiveHeroIndex,
+    site.heroSlides,
+    site.heroSpeedSeconds,
+    uiState.activeHeroIndex,
+    uiState.isLoading
+  ]);
 
   return (
     <div
@@ -201,27 +415,24 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
         } as CSSProperties
       }
     >
-      <Preloader
-        isActive={uiState.isLoading}
-        brandName={SITE_CONFIG.brandName}
-        textureSrc={activeSlide.imageSrc}
-        reducedMotion={isReducedMotion}
-      />
-
       <AutoHideHeader
-        navItems={SITE_CONFIG.navItems}
+        brandName={site.brandName}
+        navItems={site.navItems}
         isNavOpen={uiState.isNavOpen}
+        forceHidden={isFiguresPage && isIdleMode && !uiState.isNavOpen}
+        introReady={introReady}
+        tone={page === "home" ? "light" : "dark"}
         onToggleNav={toggleNav}
         onNavigate={navigate}
       />
 
       <NavigationOverlay
-        navItems={SITE_CONFIG.navItems}
+        brandName={site.brandName}
+        navItems={site.navItems}
         isNavOpen={uiState.isNavOpen}
         isDoorOpen={uiState.isDoorOpen}
         activeSlide={activeSlide}
         onNavigate={navigate}
-        onClose={closeNav}
         onToggleDoor={toggleDoor}
       />
 
@@ -229,7 +440,7 @@ export function SiteShell({ page = "home", section }: SiteShellProps) {
         {pageContent}
       </main>
 
-      <PageTransition isActive={isRouteTransitioning} brandName={SITE_CONFIG.brandName} />
+      {isFiguresPage ? <LiveClock show={isIdleMode && !uiState.isNavOpen && !uiState.isLoading} /> : null}
     </div>
   );
 }

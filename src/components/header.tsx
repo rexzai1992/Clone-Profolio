@@ -1,6 +1,7 @@
 "use client";
 
-import { SITE_CONFIG, type NavItem } from "@/data/site-config";
+import type { NavItem } from "@/data/site-config";
+import { useSiteContent } from "@/context/site-content-context";
 
 interface HeaderProps {
   navItems: NavItem[];
@@ -17,16 +18,17 @@ function getMonthAndYear() {
 }
 
 export function Header({ navItems, isNavOpen, onToggleNav, onNavigate }: HeaderProps) {
+  const { site } = useSiteContent();
   const { month, year } = getMonthAndYear();
 
   return (
     <header className="site-header">
-      <a href="/" className="site-header__brand" aria-label={SITE_CONFIG.brandName} onClick={(event) => {
+      <a href="/" className="site-header__brand" aria-label={site.brandName} onClick={(event) => {
         event.preventDefault();
         onNavigate("/");
       }}>
         <span className="site-header__mark brand-mark" aria-hidden="true" />
-        <span className="site-header__name">{SITE_CONFIG.brandName}</span>
+        <span className="site-header__name">{site.brandName}</span>
       </a>
 
       <nav className="site-header__desktop-nav" aria-label="Primary">

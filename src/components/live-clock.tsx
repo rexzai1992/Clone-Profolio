@@ -1,24 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
 interface LiveClockProps {
   show: boolean;
 }
 
-function getNow() {
-  return new Date();
-}
-
 export function LiveClock({ show }: LiveClockProps) {
   const [isMounted, setIsMounted] = useState(false);
-  const [time, setTime] = useState<Date>(() => getNow());
+  const [time, setTime] = useState<Date>(() => new Date());
 
   useEffect(() => {
     setIsMounted(true);
     const timer = window.setInterval(() => {
-      setTime(getNow());
+      setTime(new Date());
     }, 1000);
 
     return () => window.clearInterval(timer);
@@ -43,15 +38,9 @@ export function LiveClock({ show }: LiveClockProps) {
   }, [time]);
 
   return (
-    <motion.div
-      className="live-clock"
-      initial={{ opacity: 0, y: -8 }}
-      animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: -8 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      aria-label="Current date and time"
-    >
+    <div className={`live-clock ${show ? "is-shown" : ""}`} aria-label="Current date and time">
       <span>{isMounted ? parts.clock : "--:--:--"}</span>
       <small>{isMounted ? parts.date : "---"}</small>
-    </motion.div>
+    </div>
   );
 }

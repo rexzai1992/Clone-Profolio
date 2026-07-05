@@ -1,3 +1,5 @@
+import { r2Asset } from "@/data/assets";
+
 export interface NavItem {
   id: string;
   label: string;
@@ -14,6 +16,7 @@ export interface HeroSlide {
   cta: string;
   ctaHref: string;
   imageSrc: string;
+  imagePreviewSrc?: string;
   imageMobileSrc?: string;
   imageAlt: string;
   theme: {
@@ -47,6 +50,15 @@ export interface FigureItem {
   caption: string;
 }
 
+export interface SectionContent {
+  kicker: string;
+  heading: string;
+  lead?: string;
+  lines?: string[];
+  imageSrc?: string;
+  imageAlt?: string;
+}
+
 export interface SiteConfig {
   brandName: string;
   ownerName: string;
@@ -57,6 +69,14 @@ export interface SiteConfig {
   featured: PortfolioItem[];
   games: PortfolioItem[];
   devs: PortfolioItem[];
+  sections: {
+    featured: SectionContent;
+    games: SectionContent;
+    dev: SectionContent;
+    news: SectionContent;
+    about: SectionContent;
+    contact: SectionContent;
+  };
 }
 
 export const SITE_CONFIG: SiteConfig = {
@@ -80,8 +100,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "Painter: Ayumu Irisuaki",
       cta: "Explore",
       ctaHref: "/figures",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_z23_v1.jpg",
-      imageMobileSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_z23_sp_v1.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1.jpg"),
+      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-768x432.jpg"),
+      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_sp_v1.jpg"),
       imageAlt: "Generic hero placeholder A",
       theme: {
         bgA: "#222024",
@@ -98,8 +119,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "Painter: Ayumu Irisuaki",
       cta: "Explore",
       ctaHref: "/figures",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_katsuragi_v3.jpg",
-      imageMobileSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_katsuragi_sp_v3.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3.jpg"),
+      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-768x432.jpg"),
+      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_sp_v3.jpg"),
       imageAlt: "Generic hero placeholder B",
       theme: {
         bgA: "#16181d",
@@ -116,8 +138,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "Painter: Emi Hoshina",
       cta: "Explore",
       ctaHref: "/figures",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2.jpg",
-      imageMobileSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_aoba_sp_v2.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2.jpg"),
+      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-768x432.jpg"),
+      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_aoba_sp_v2.jpg"),
       imageAlt: "Generic hero placeholder C",
       theme: {
         bgA: "#1d1a1a",
@@ -133,8 +156,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/z23/",
       color: "#1a1818",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/index-z23-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/index-z23.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/index-z23-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/index-z23.jpg"),
       series: "AZUR LANE",
       name: "Z23",
       caption: "Philosophy Sensei"
@@ -145,8 +168,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/katsuragi/",
       color: "#19a4d0",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/09/cover_katsuragi_v2-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/09/cover_katsuragi_v2.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/09/cover_katsuragi_v2-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/09/cover_katsuragi_v2.jpg"),
       series: "AZUR LANE",
       name: "KATSURAGI",
       caption: "Night-Illuminating Festival"
@@ -157,8 +180,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/aoba-minami/",
       color: "#55c3cd",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02.jpg"),
       series: "SORA-IRO UTILITY",
       name: "Aoba Minami",
       caption: "Nice Shot Challenge!!"
@@ -169,8 +192,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/le-malin-lapin/",
       color: "#A62648",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1.jpg"),
       series: "AZUR LANE",
       name: "Le Malin",
       caption: "Listless Lapin"
@@ -181,8 +204,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/kashino/",
       color: "#cb90dd",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1.jpg"),
       series: "AZUR LANE",
       name: "Kashino",
       caption: "Hot Springs Relaxation"
@@ -193,8 +216,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/eimi/",
       color: "#F896A4",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1.jpg"),
       series: "Blue Archive",
       name: "Eimi",
       caption: "Izumimoto Eimi"
@@ -205,8 +228,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/javelin/",
       color: "#A459E2",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1.jpg"),
       series: "AZUR LANE",
       name: "Javelin",
       caption: "Blissful Purity"
@@ -217,8 +240,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/shoukaku/",
       color: "#593D76",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1.jpg"),
       series: "AZUR LANE",
       name: "Shoukaku",
       caption: "Sororal Wings"
@@ -229,8 +252,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/super-sonico/",
       color: "#FDFAF4",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/12/17477_02_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/12/17477_02_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/12/17477_02_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/12/17477_02_top-1.jpg"),
       series: "SUPER SONICO",
       name: "SUPER SONICO",
       caption: "1♡th Merry Christmas!"
@@ -241,8 +264,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/rin-shirane/",
       color: "#293CAD",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/11/2089_top-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/11/2089_top.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/11/2089_top-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/11/2089_top.jpg"),
       series: "Little Armory",
       name: "Rin Shirane",
       caption: "Beach Shootout"
@@ -253,8 +276,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/zuikaku/",
       color: "#A2081B",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1.jpg"),
       series: "AZUR LANE",
       name: "Zuikaku",
       caption: "The Wind's True Name"
@@ -265,8 +288,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/bremerton/",
       color: "#73C6BE",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1.jpg"),
       series: "AZUR LANE",
       name: "Bremerton",
       caption: "Scorching - Hot Training"
@@ -277,8 +300,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/taihou/",
       color: "#8D0512",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1.jpg"),
       series: "AZUR LANE",
       name: "Taihou",
       caption: "Enraptured Companion"
@@ -289,8 +312,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/bache/",
       color: "#FCB238",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1.jpg"),
       series: "AZUR LANE",
       name: "Bache",
       caption: "Fletcher-class destroyer"
@@ -301,8 +324,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/ning-hai/",
       color: "#7E5ABC",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1.jpg"),
       series: "AZUR LANE",
       name: "NING HAI",
       caption: "Summer Hunger"
@@ -313,8 +336,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/le-malin/",
       color: "#000000",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1.jpg"),
       series: "AZUR LANE",
       name: "Le Malin",
       caption: "The blade that protect Vichya Dominion"
@@ -325,8 +348,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/prince-of-wales/",
       color: "#FFEACB",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top.jpg"),
       series: "AZUR LANE",
       name: "Prince of Wales",
       caption: "The Laureate's Victory Lap"
@@ -337,8 +360,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/duke-of-york/",
       color: "#392D30",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/03/39139_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/03/39139_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/03/39139_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/03/39139_top-1.jpg"),
       series: "AZUR LANE",
       name: "Duke of York",
       caption: "Prestige of the Glorious Formula"
@@ -349,8 +372,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/chocola/",
       color: "#F89FA1",
       whiteText: true,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/01/15449_top-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/01/15449_top.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15449_top-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15449_top.jpg"),
       series: "NEKOPARA",
       name: "Chocola",
       caption: "Race Queen ver."
@@ -361,8 +384,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/vanilla/",
       color: "#E5DCF8",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/01/15472_top-1-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2020/01/15472_top-1.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15472_top-1-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15472_top-1.jpg"),
       series: "NEKOPARA",
       name: "Vanilla",
       caption: "Race Queen ver."
@@ -373,8 +396,8 @@ export const SITE_CONFIG: SiteConfig = {
       href: "/figures/ping-hai/",
       color: "#FAD7D8",
       whiteText: false,
-      thumbSrc: "https://mimeyoi.co/wp/wp-content/uploads/2019/11/28736_top-244x300.jpg",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2019/11/28736_top.jpg",
+      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2019/11/28736_top-244x300.jpg"),
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2019/11/28736_top.jpg"),
       series: "AZUR LANE",
       name: "PING HAI",
       caption: "Merry Summer"
@@ -388,7 +411,7 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "Hero gameplay concept placeholder. Replace with your media anytime.",
       stack: ["WebGL", "Motion", "Interaction"],
       cta: "Open Case",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for game project"
     },
     {
@@ -398,7 +421,7 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "Production engineering placeholder with cinematic presentation.",
       stack: ["Next.js", "Cloudflare", "Automation"],
       cta: "Read Build",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for dev project"
     }
   ],
@@ -410,7 +433,7 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "Drop your own screenshot and game details here.",
       stack: ["Physics", "Realtime", "UX"],
       cta: "Preview",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for game project"
     },
     {
@@ -420,7 +443,7 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "Designed for handoff once your real media is ready.",
       stack: ["Pose", "Audio", "Scoring"],
       cta: "Preview",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for game project"
     }
   ],
@@ -432,7 +455,7 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "System architecture and deployment portfolio slot.",
       stack: ["API", "Database", "Workers"],
       cta: "Inspect",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for developer project"
     },
     {
@@ -442,8 +465,86 @@ export const SITE_CONFIG: SiteConfig = {
       summary: "Scalable product engineering and delivery slot.",
       stack: ["CI/CD", "Observability", "Performance"],
       cta: "Inspect",
-      imageSrc: "https://mimeyoi.co/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg"),
       imageAlt: "Reference photo placeholder for developer project"
     }
-  ]
+  ],
+  sections: {
+    featured: {
+      kicker: "Featured",
+      heading: "Signature Work"
+    },
+    games: {
+      kicker: "Game Projects",
+      heading: "Playable Direction"
+    },
+    dev: {
+      kicker: "Dev Projects",
+      heading: "Production Engineering"
+    },
+    news: {
+      kicker: "NEWS",
+      heading: "Release information",
+      lead: "5.29.2026",
+      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
+      imageAlt: "Release information product visual",
+      lines: [
+        "## Resale announcement",
+        "Release information",
+        "Azur Lane Le Malin 'Listless Lapin'",
+        "A resale has been confirmed for this figure.",
+        "Thank you for the many requests and inquiries we have received since the first release.",
+        "If you missed the first release, or recently discovered this character, please consider the new reservation period.",
+        "Production quantity will be decided based on reservation volume."
+      ]
+    },
+    about: {
+      kicker: "About mimeyoi",
+      heading: "Figure brand crafting detailed collectible worlds.",
+      lead:
+        "MIMEYOI presents premium scale figures with cinematic presentation. This page keeps the reference motion tone and minimalist structure for product-focused storytelling."
+    },
+    contact: {
+      kicker: "Contact/FAQ",
+      heading: "Please read before contacting us.",
+      lead: "For product defects, warranty questions, product availability, release timing, counterfeit goods, and OEM / ODM development inquiries.",
+      lines: [
+        "## Notes before inquiry",
+        "Product defects should be reported to the customer support listed on the package or to the shop where the item was purchased.",
+        "Please include photos when reporting a defect so the condition can be checked clearly.",
+        "## Warranty",
+        "### The package was damaged",
+        "The package is shipping material. Minor scratches or dents during transit may not qualify for replacement unless the figure itself is affected.",
+        "## Products",
+        "### Where can MIMEYOI products be purchased?",
+        "This website is not an online store. Please use the retailer links on each figure detail page and contact the retailer directly.",
+        "### When is the release date?",
+        "Shipping information is announced on the News page. Arrival dates can differ depending on retailer region.",
+        "### Are there resale plans?",
+        "Resale announcements are posted on this website when confirmed.",
+        "## Counterfeit products",
+        "Counterfeit goods sold through auctions or private listings are not eligible for product support.",
+        "## OEM / ODM development",
+        "Scale figure and character figure OEM / ODM development inquiries are welcome.",
+        "FIELD: Name",
+        "FIELD: Email address",
+        "FIELD: Subject",
+        "FIELD: Inquiry details",
+        "UPLOAD: Attachment image",
+        "SUBMIT: Send this message",
+        "THANKS: THANK YOU / FOR THE MESSAGE."
+      ]
+    }
+  }
 };
+
+export function getFigureSlugFromHref(href: string): string {
+  return href
+    .split("/")
+    .filter(Boolean)
+    .pop() ?? "";
+}
+
+export function getFigureBySlug(slug: string): FigureItem | undefined {
+  return SITE_CONFIG.figures.find((figure) => getFigureSlugFromHref(figure.href) === slug);
+}

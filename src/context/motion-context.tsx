@@ -36,6 +36,11 @@ interface MotionContextValue {
   setClockMode: (value: boolean) => void;
   setActiveHeroIndex: (index: number) => void;
   triggerTransition: (durationMs?: number) => void;
+  completeFirstLoadIntro: () => void;
+  beginRouteOverlay: (fromPath: string, toPath: string) => void;
+  markRouteOverlayCovered: () => void;
+  revealRouteOverlay: () => void;
+  clearRouteOverlay: () => void;
 }
 
 const MotionContext = createContext<MotionContextValue | null>(null);
@@ -133,6 +138,71 @@ export function MotionProvider({ children }: PropsWithChildren) {
     setUiState((prev) => ({ ...prev, activeHeroIndex: index }));
   }, []);
 
+  const completeFirstLoadIntro = useCallback(() => {
+    setUiState((prev) => {
+      if (prev.isFirstLoadIntroDone && !prev.isLoading) {
+        return prev;
+      }
+      return {
+        ...prev,
+        isFirstLoadIntroDone: true,
+        isLoading: false
+      };
+    });
+  }, []);
+
+  const beginRouteOverlay = useCallback((fromPath: string, toPath: string) => {
+    setUiState((prev) => ({
+      ...prev,
+      routeOverlayActive: true,
+      routeOverlayPhase: "covering",
+      routeOverlayFrom: fromPath,
+      routeOverlayTo: toPath
+    }));
+  }, []);
+
+  const revealRouteOverlay = useCallback(() => {
+    setUiState((prev) => {
+      if (!prev.routeOverlayActive || prev.routeOverlayPhase !== "covered") {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        routeOverlayPhase: "revealing"
+      };
+    });
+  }, []);
+
+  const markRouteOverlayCovered = useCallback(() => {
+    setUiState((prev) => {
+      if (!prev.routeOverlayActive || prev.routeOverlayPhase !== "covering") {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        routeOverlayPhase: "covered"
+      };
+    });
+  }, []);
+
+  const clearRouteOverlay = useCallback(() => {
+    setUiState((prev) => {
+      if (!prev.routeOverlayActive && prev.routeOverlayPhase === "idle") {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        routeOverlayActive: false,
+        routeOverlayPhase: "idle",
+        routeOverlayFrom: null,
+        routeOverlayTo: null
+      };
+    });
+  }, []);
+
   useEffect(() => {
     if (loaderTimerRef.current !== null) {
       window.clearTimeout(loaderTimerRef.current);
@@ -176,7 +246,12 @@ export function MotionProvider({ children }: PropsWithChildren) {
       closeDoor,
       setClockMode,
       setActiveHeroIndex,
-      triggerTransition
+      triggerTransition,
+      completeFirstLoadIntro,
+      beginRouteOverlay,
+      markRouteOverlayCovered,
+      revealRouteOverlay,
+      clearRouteOverlay
     }),
     [
       uiState,
@@ -188,7 +263,12 @@ export function MotionProvider({ children }: PropsWithChildren) {
       closeDoor,
       setClockMode,
       setActiveHeroIndex,
-      triggerTransition
+      triggerTransition,
+      completeFirstLoadIntro,
+      beginRouteOverlay,
+      markRouteOverlayCovered,
+      revealRouteOverlay,
+      clearRouteOverlay
     ]
   );
 

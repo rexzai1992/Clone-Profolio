@@ -1,5 +1,7 @@
 node_modules
 .next
+.wrangler
+.dev.vars
 out
 .DS_Store
 npm-debug.log*
@@ -9,4 +11,5 @@ pnpm-debug.log*
 coverage
 test-results
 playwright-report
+reference-recordings/
 *.tsbuildinfo

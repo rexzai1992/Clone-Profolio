@@ -1,25 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { SITE_CONFIG, type NavItem } from "@/data/site-config";
+import type { NavItem } from "@/data/site-config";
 
 interface AutoHideHeaderProps {
+  brandName: string;
   navItems: NavItem[];
   isNavOpen: boolean;
+  forceHidden?: boolean;
+  introReady?: boolean;
+  tone?: "light" | "dark";
   onToggleNav: () => void;
   onNavigate: (href: string) => void;
 }
 
 export function AutoHideHeader({
+  brandName,
   navItems,
   isNavOpen,
+  forceHidden = false,
+  introReady = true,
   onToggleNav,
   onNavigate
 }: AutoHideHeaderProps) {
   const [isHidden, setIsHidden] = useState(false);
+  const [didIntroReveal, setDidIntroReveal] = useState(false);
   const lastYRef = useRef(0);
-  const idleTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (isNavOpen) {
@@ -27,28 +33,15 @@ export function AutoHideHeader({
       return;
     }
 
-    const clearIdle = () => {
-      if (idleTimerRef.current !== null) {
-        window.clearTimeout(idleTimerRef.current);
-        idleTimerRef.current = null;
-      }
-    };
-
     const onScroll = () => {
       const y = window.scrollY;
       const delta = y - lastYRef.current;
 
-      if (y < 10 || delta < -3) {
+      if (y < 10 || delta < -4) {
         setIsHidden(false);
-      } else if (delta > 3) {
+      } else if (delta > 4) {
         setIsHidden(true);
       }
-
-      clearIdle();
-      idleTimerRef.current = window.setTimeout(() => {
-        setIsHidden(false);
-        idleTimerRef.current = null;
-      }, 180);
 
       lastYRef.current = y;
     };
@@ -56,28 +49,44 @@ export function AutoHideHeader({
     lastYRef.current = window.scrollY;
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      clearIdle();
       window.removeEventListener("scroll", onScroll);
     };
   }, [isNavOpen]);
 
+  const shouldShow = introReady && (isNavOpen || (!isHidden && !forceHidden));
+  const useIntroTiming = introReady && !didIntroReveal;
+
+  useEffect(() => {
+    if (!shouldShow || !useIntroTiming) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setDidIntroReveal(true), 900);
+    return () => window.clearTimeout(timer);
+  }, [shouldShow, useIntroTiming]);
+
   return (
-    <motion.header
-      className={`auto-header ${isNavOpen ? "is-open" : ""}`}
-      animate={isHidden && !isNavOpen ? { y: "-102%", opacity: 0 } : { y: "0%", opacity: 1 }}
-      transition={{ duration: 0.46, ease: [0.22, 1, 0.36, 1] }}
+    <header
+      className={[
+        "auto-header",
+        isNavOpen ? "is-open" : "",
+        shouldShow ? "is-shown" : "",
+        useIntroTiming ? "is-intro" : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <a
         className="auto-header__brand"
         href="/"
-        aria-label={SITE_CONFIG.brandName}
+        aria-label={brandName}
         onClick={(event) => {
           event.preventDefault();
           onNavigate("/");
         }}
       >
         <span className="auto-header__mark brand-mark" aria-hidden="true" />
-        <span className="auto-header__name">{SITE_CONFIG.brandName}</span>
+        <span className="auto-header__name">{brandName}</span>
       </a>
 
       <nav className="auto-header__nav" aria-label="Primary">
@@ -111,6 +120,6 @@ export function AutoHideHeader({
           <span />
         </button>
       </div>
-    </motion.header>
+    </header>
   );
 }
