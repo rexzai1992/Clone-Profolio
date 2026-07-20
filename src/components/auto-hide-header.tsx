@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { NavItem } from "@/data/site-config";
+import { BrandLogo } from "@/components/brand-logo";
 
 interface AutoHideHeaderProps {
   brandName: string;
@@ -85,7 +86,7 @@ export function AutoHideHeader({
           onNavigate("/");
         }}
       >
-        <span className="auto-header__mark brand-mark" aria-hidden="true" />
+        <BrandLogo className="auto-header__mark" />
         <span className="auto-header__name">{brandName}</span>
       </a>
 
@@ -108,7 +109,7 @@ export function AutoHideHeader({
       </nav>
 
       <div className="auto-header__right">
-        <span className="auto-header__lang">JA</span>
+        <span className="auto-header__lang">EN</span>
         <button
           className="auto-header__menu"
           type="button"

@@ -7,7 +7,7 @@ import type {
 } from "@/data/site-config";
 import { SITE_CONFIG } from "@/data/site-config";
 
-export const CONTENT_VERSION = 1;
+export const CONTENT_VERSION = 2;
 export const CONTENT_OBJECT_KEY = "content/site-config.json";
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 export const ALLOWED_UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
@@ -122,6 +122,7 @@ function validateFigure(value: unknown, path: string, errors: string[]): FigureI
     id: readString(record.id, `${path}.id`, errors),
     group: readString(record.group, `${path}.group`, errors) as FigureItem["group"],
     href: readString(record.href, `${path}.href`, errors),
+    externalHref: readString(record.externalHref, `${path}.externalHref`, errors),
     color: readString(record.color, `${path}.color`, errors),
     whiteText: readBoolean(record.whiteText, `${path}.whiteText`, errors),
     thumbSrc: readString(record.thumbSrc, `${path}.thumbSrc`, errors),
@@ -145,6 +146,7 @@ function validatePortfolioItem(value: unknown, path: string, errors: string[]): 
     summary: readString(record.summary, `${path}.summary`, errors),
     stack: readStringArray(record.stack, `${path}.stack`, errors),
     cta: readString(record.cta, `${path}.cta`, errors),
+    href: readString(record.href, `${path}.href`, errors),
     imageSrc: readString(record.imageSrc, `${path}.imageSrc`, errors),
     imageAlt: readString(record.imageAlt, `${path}.imageAlt`, errors)
   };

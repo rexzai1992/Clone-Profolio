@@ -2,6 +2,7 @@
 
 import type { NavItem } from "@/data/site-config";
 import { useSiteContent } from "@/context/site-content-context";
+import { BrandLogo } from "@/components/brand-logo";
 
 interface HeaderProps {
   navItems: NavItem[];
@@ -27,7 +28,7 @@ export function Header({ navItems, isNavOpen, onToggleNav, onNavigate }: HeaderP
         event.preventDefault();
         onNavigate("/");
       }}>
-        <span className="site-header__mark brand-mark" aria-hidden="true" />
+        <BrandLogo className="site-header__mark" />
         <span className="site-header__name">{site.brandName}</span>
       </a>
 

@@ -7,8 +7,9 @@ import { SiteContentProvider } from "@/context/site-content-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MIMEYOI",
-  description: "MIMEYOI scale figures with cinematic showcase motion."
+  title: "Kaynx1 — Izzul Fitree",
+  description:
+    "Technical product development, AI automation, computer vision, interactive games and business systems by Izzul Fitree."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

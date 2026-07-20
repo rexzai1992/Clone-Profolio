@@ -28,7 +28,7 @@ interface LenisLike {
   scrollTo: (target: number, options?: { duration?: number; immediate?: boolean }) => void;
 }
 
-const FIGURE_GROUPS: FigureItem["group"][] = ["Pre-Order", "Released products"];
+const FIGURE_GROUPS: FigureItem["group"][] = ["Development", "Interactive Games", "Featured Work", "Selected Systems"];
 const HOVER_LEAVE_GRACE_MS = 1200;
 const FIGURE_SWITCH_GRACE_MS = 120;
 const CARD_NAV_TRANSITION_MS = 450;
@@ -38,6 +38,12 @@ const FIGURE_EAGER_COUNT = 6;
 
 interface FiguresIndexProps {
   onNavigate?: (href: string) => void;
+  items?: FigureItem[];
+  sectionId?: string;
+  eyebrow?: string;
+  heading?: string;
+  ariaLabel?: string;
+  showDescriptions?: boolean;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -71,9 +77,17 @@ function getFigureTextColor(figure: FigureItem | undefined, isHovering: boolean,
   return figure.whiteText ? "white" : "black";
 }
 
-export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
+export function FiguresIndex({
+  onNavigate,
+  items,
+  sectionId = "figures",
+  eyebrow = "Portfolio",
+  heading = "Selected Work",
+  ariaLabel = "Kaynx1 selected work gallery",
+  showDescriptions = true
+}: FiguresIndexProps) {
   const { site } = useSiteContent();
-  const figures = site.figures;
+  const figures = items ?? site.figures;
   const { uiState, isReducedMotion, revealRouteOverlay, tokens } = useMotion();
   const pathname = usePathname();
   const railRef = useRef<HTMLDivElement | null>(null);
@@ -130,7 +144,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
   const isIncomingFigureOverlayRoute =
     uiState.routeOverlayActive &&
     normalizePath(uiState.routeOverlayTo) === normalizePath(pathname) &&
-    /^\/figures?(?:\/|$)/.test(normalizePath(pathname));
+    /^\/(?:figures?|games|dev|portfolio)(?:\/|$)/.test(normalizePath(pathname));
 
   const setActiveFigure = useCallback((figureId: string) => {
     if (activeFigureIdRef.current === figureId) {
@@ -869,6 +883,10 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
       }
       cardNavigateTimerRef.current = window.setTimeout(() => {
         onNavigate(href);
+        if (/^https?:\/\//.test(href)) {
+          setIsCardTransitioning(false);
+          setLeavingFigureId(null);
+        }
         cardNavigateTimerRef.current = null;
       }, CARD_NAV_TRANSITION_MS);
     },
@@ -887,7 +905,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
 
   return (
     <section
-      id="figures"
+      id={sectionId}
       ref={sectionRef}
       className="figures-index"
       data-nav={mode}
@@ -897,7 +915,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
       data-transitioning={isCardTransitioning ? "true" : "false"}
       data-route-waiting={isIncomingFigureOverlayRoute && uiState.routeOverlayPhase === "covered" ? "true" : "false"}
       data-text={figureText}
-      aria-label="Scale figures reference gallery"
+      aria-label={ariaLabel}
       style={
         {
           "--figure-character": figureCharacter,
@@ -906,11 +924,11 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
       }
     >
       <header className="figures-index__heading">
-        <p>Collection</p>
-        <h1>Scale Figures</h1>
+        <p>{eyebrow}</p>
+        <h1>{heading}</h1>
       </header>
 
-      <ul className="figures-index__nav" aria-label="Figure view mode">
+      <ul className="figures-index__nav" aria-label="Portfolio view mode">
         {(["grid", "index"] as FigureMode[]).map((viewMode) => (
           <li key={viewMode}>
             <button
@@ -1005,7 +1023,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
                   <div className="figures-index__main">
                     <p>{figure.series}</p>
                     <h3>{figure.name}</h3>
-                    <span>{figure.caption}</span>
+                    {showDescriptions ? <span>{figure.caption}</span> : null}
                   </div>
                 </a>
               </div>
@@ -1019,7 +1037,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
               <h2>{group}</h2>
               <div className="figures-index__index-info" aria-live="polite">
                 <span>{activeFigure?.name}</span>
-                <span>{activeFigure?.caption}</span>
+                <span>{showDescriptions ? activeFigure?.caption : activeFigure?.series}</span>
               </div>
               <div className="figures-index__index-grid">
                 {figures.map((figure) => (
@@ -1031,7 +1049,7 @@ export function FiguresIndex({ onNavigate }: FiguresIndexProps) {
                     onMouseEnter={() => handleFigureEnter(figure)}
                     onFocus={() => handleFigureEnter(figure)}
                   >
-                    <img src={figure.thumbSrc} alt={`${figure.name} reference placeholder`} loading="lazy" />
+                    <img src={figure.thumbSrc} alt={`${figure.name} project preview`} loading="lazy" />
                   </a>
                 ))}
               </div>

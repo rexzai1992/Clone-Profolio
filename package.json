@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "docker:build": "docker compose build",
+    "docker:down": "docker compose down",
+    "docker:up": "docker compose up --build",
     "start": "next start",
     "lint": "tsc --noEmit -p tsconfig.lint.json",
     "test:e2e": "playwright test",

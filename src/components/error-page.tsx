@@ -3,9 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NotFoundEffect } from "@/components/notfound-effect";
-import { r2Asset } from "@/data/assets";
-
-const NOTFOUND_IMAGE = r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/404_v4.jpg");
+const NOTFOUND_IMAGE = "/images/kaynx1-hero-anime.png";
 
 export function ErrorPage() {
   return (
@@ -20,7 +18,7 @@ export function ErrorPage() {
       </div>
       <div className="error-page__link">
         <Link className="c-button" href="/">
-          <span>EXPLORE</span>
+          <span>BACK TO KAYNX1</span>
         </Link>
       </div>
     </main>

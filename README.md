@@ -1,4 +1,6 @@
-# Clone-Profolio
+# Kaynx1 Portfolio
+
+Cinematic personal portfolio for Izzul Fitree, featuring technical product development, AI automation, interactive games and business systems.
 
 ## Admin panel
 
@@ -22,6 +24,24 @@ npx wrangler dev --local
 ```
 
 Open `/admin/login/` and sign in with the configured credentials.
+
+### Docker setup
+
+The Docker container builds the static Next export and runs the Cloudflare Worker locally through Wrangler.
+
+```bash
+cp .dev.vars.example .dev.vars
+npm run docker:up
+```
+
+Open `http://localhost:8787/` or, from another device on the same LAN, `http://YOUR-MAC-IP:8787/`.
+
+Useful commands:
+
+```bash
+npm run docker:build
+npm run docker:down
+```
 
 ### Cloudflare secrets
 

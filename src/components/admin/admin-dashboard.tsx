@@ -835,13 +835,14 @@ export function AdminDashboard() {
           <div className={styles.formGrid}>
             <SelectField
               label="Group"
-              options={["Pre-Order", "Released products"]}
+              options={["Featured Work", "Selected Systems"]}
               value={selectedFigureItem.group}
               onChange={(value) => updateFigure(figureIndex, { group: value as FigureItem["group"] })}
             />
             <TextField label="Series" value={selectedFigureItem.series} onChange={(value) => updateFigure(figureIndex, { series: value })} />
             <TextField label="Name" value={selectedFigureItem.name} onChange={(value) => updateFigure(figureIndex, { name: value })} />
             <TextField label="Caption" value={selectedFigureItem.caption} onChange={(value) => updateFigure(figureIndex, { caption: value })} />
+            <TextField label="Project URL" type="url" value={selectedFigureItem.externalHref} onChange={(value) => updateFigure(figureIndex, { externalHref: value })} />
             <TextField label="Tile color" value={selectedFigureItem.color} onChange={(value) => updateFigure(figureIndex, { color: value })} />
             <ToggleField label="Use light text on tile" checked={selectedFigureItem.whiteText} onChange={(value) => updateFigure(figureIndex, { whiteText: value })} />
           </div>
@@ -907,6 +908,7 @@ export function AdminDashboard() {
           <div className={styles.formGrid}>
             <TextField label="Title" value={selectedProjectItem.title} onChange={(value) => updatePortfolio(activeProjectGroup, projectIndex, { title: value })} />
             <TextField label="CTA" value={selectedProjectItem.cta} onChange={(value) => updatePortfolio(activeProjectGroup, projectIndex, { cta: value })} />
+            <TextField label="Project URL" type="url" value={selectedProjectItem.href} onChange={(value) => updatePortfolio(activeProjectGroup, projectIndex, { href: value })} />
             <TextField
               label="Alt text"
               value={selectedProjectItem.imageAlt}
@@ -968,7 +970,7 @@ export function AdminDashboard() {
             onChange={(value) => updateSection(activeSection, { lead: value })}
           />
         ) : null}
-        {activeSection === "news" || activeSection === "contact" ? (
+        {activeSection === "news" || activeSection === "about" || activeSection === "contact" ? (
           <TextAreaField
             label={`${SECTION_LABELS[activeSection]} lines, one per line`}
             value={joinLines(site.sections[activeSection].lines)}
@@ -989,6 +991,23 @@ export function AdminDashboard() {
               recommendation={IMAGE_RECOMMENDATIONS.projectCard}
               value={site.sections.news.imageSrc ?? ""}
               onChange={(value) => updateSection("news", { imageSrc: value || undefined })}
+              onUpload={uploadImage}
+            />
+          </>
+        ) : null}
+        {activeSection === "about" ? (
+          <>
+            <TextField
+              label="Profile image alt text"
+              value={site.sections.about.imageAlt ?? ""}
+              onChange={(value) => updateSection("about", { imageAlt: value })}
+            />
+            <ImageField
+              alt={site.sections.about.imageAlt}
+              label="Profile image URL"
+              recommendation={IMAGE_RECOMMENDATIONS.projectCard}
+              value={site.sections.about.imageSrc ?? ""}
+              onChange={(value) => updateSection("about", { imageSrc: value || undefined })}
               onUpload={uploadImage}
             />
           </>

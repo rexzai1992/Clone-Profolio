@@ -78,4 +78,41 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await expect(page.locator(".live-clock")).toHaveClass(/is-shown/);
     await page.screenshot({ path: "/tmp/kaynx1-figures-idle-clock.png", fullPage: false });
   });
+
+  test("work and games reuse the figure carousel interactions", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    for (const collection of [
+      { path: "/games", heading: "Work & Games", count: 16 },
+      { path: "/dev", heading: "Work & Games", count: 16 }
+    ]) {
+      await page.goto(collection.path, { waitUntil: "networkidle" });
+      await page.waitForTimeout(4200);
+
+      const carousel = page.locator(".figures-index");
+      await expect(carousel).toHaveAttribute("data-nav", "grid");
+      await expect(page.locator(".figures-index__heading h1")).toHaveText(collection.heading);
+      await expect(page.locator(".figures-index__grid-item")).toHaveCount(collection.count);
+      await expect(page.locator(".figures-index__main > span")).toHaveCount(0);
+      const carouselColors = await page.locator(".figures-index__link").evaluateAll((links) =>
+        links.map((link) => getComputedStyle(link).getPropertyValue("--figure-card-color").trim())
+      );
+      expect(new Set(carouselColors).size).toBe(collection.count);
+      await page.locator(".figures-index__grid-item.is-active .figures-index__image").first().hover({ force: true });
+      await page.waitForTimeout(250);
+      const engagedColor = await carousel.evaluate((node) => getComputedStyle(node).getPropertyValue("--figure-character").trim());
+      expect(carouselColors).toContain(engagedColor);
+      await page.mouse.move(20, 20);
+
+      const firstTransform = await page.locator(".figures-index__grid-item").first().evaluate((node) => getComputedStyle(node).transform);
+      await page.mouse.wheel(0, 420);
+      await page.waitForTimeout(900);
+      const secondTransform = await page.locator(".figures-index__grid-item").first().evaluate((node) => getComputedStyle(node).transform);
+      expect(secondTransform).not.toBe(firstTransform);
+
+      await page.getByRole("button", { name: "Index" }).click();
+      await page.waitForTimeout(500);
+      await expect(carousel).toHaveAttribute("data-nav", "index");
+    }
+  });
 });

@@ -103,22 +103,22 @@ export function FigureDetailView({ figure }: FigureDetailViewProps) {
           <h2>{currentFigure.caption}</h2>
 
           <div className="figure-detail__actions">
-            <span>{`Photo ${figureOrdinal}`}</span>
+            <span>{`Project ${figureOrdinal}`}</span>
             <a href="/figures" onClick={handleBack}>
               Back to Index
             </a>
-            <a href={currentFigure.href} target="_blank" rel="noreferrer">
-              Open Reference
+            <a href={currentFigure.externalHref} target="_blank" rel="noreferrer">
+              Open Project
             </a>
           </div>
 
           <dl>
             <div>
-              <dt>Series</dt>
+              <dt>Focus</dt>
               <dd>{currentFigure.series}</dd>
             </div>
             <div>
-              <dt>Status</dt>
+              <dt>Category</dt>
               <dd>{currentFigure.group}</dd>
             </div>
           </dl>

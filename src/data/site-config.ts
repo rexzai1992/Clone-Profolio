@@ -1,5 +1,3 @@
-import { r2Asset } from "@/data/assets";
-
 export interface NavItem {
   id: string;
   label: string;
@@ -33,14 +31,16 @@ export interface PortfolioItem {
   summary: string;
   stack: string[];
   cta: string;
+  href: string;
   imageSrc: string;
   imageAlt: string;
 }
 
 export interface FigureItem {
   id: string;
-  group: "Pre-Order" | "Released products";
+  group: "Featured Work" | "Selected Systems" | "Development" | "Interactive Games";
   href: string;
+  externalHref: string;
   color: string;
   whiteText: boolean;
   thumbSrc: string;
@@ -79,472 +79,301 @@ export interface SiteConfig {
   };
 }
 
+const HERO_IMAGE = "/images/kaynx1-hero-anime.png";
+const GAMES_IMAGE = "/images/kaynx1-games.png";
+const SERVICES_IMAGE = "/images/kaynx1-services.png";
+const HERO_ANIME_IMAGE = HERO_IMAGE;
+const GAMES_HERO_ANIME_IMAGE = "/images/kaynx1-camera-hero-anime-v2.png";
+const SERVICES_HERO_ANIME_IMAGE = "/images/kaynx1-hardware-hero-anime.png";
+
 export const SITE_CONFIG: SiteConfig = {
-  brandName: "MIMEYOI",
-  ownerName: "mimeyoi",
-  heroSpeedSeconds: 5,
+  brandName: "KAYNX1",
+  ownerName: "Izzul Fitree",
+  heroSpeedSeconds: 6,
   navItems: [
-    { id: "top", label: "Top", href: "/" },
-    { id: "figures", label: "Scale Figures", href: "/figures" },
-    { id: "about", label: "About mimeyoi", href: "/about" },
-    { id: "news", label: "News", href: "/news" },
+    { id: "top", label: "Home", href: "/" },
+    { id: "portfolio", label: "Portfolio", href: "/dev" },
+    { id: "about", label: "Resume", href: "/about" },
     { id: "contact", label: "Contact", href: "/contact" }
   ],
   heroSlides: [
     {
-      id: "slide-a",
-      status: "Pre-Order",
-      title: "Z23",
-      subtitle: "Philosophy Sensei · AZUR LANE",
-      detailA: "Sculptor: Miyako Shinobuto / Yadokari",
-      detailB: "Painter: Ayumu Irisuaki",
-      cta: "Explore",
-      ctaHref: "/figures",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1.jpg"),
-      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-768x432.jpg"),
-      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_sp_v1.jpg"),
-      imageAlt: "Generic hero placeholder A",
-      theme: {
-        bgA: "#222024",
-        bgB: "#4a4345",
-        accent: "#f2f2f2"
-      }
+      id: "kaynx1-intro",
+      status: "Open to work · Malaysia",
+      title: "KAYNX1",
+      subtitle: "Technical Product Developer",
+      detailA: "AI automation · Computer vision · Interactive systems",
+      detailB: "Designing, building, deploying and supporting real products",
+      cta: "View selected work",
+      ctaHref: "/dev",
+      imageSrc: HERO_ANIME_IMAGE,
+      imageMobileSrc: HERO_ANIME_IMAGE,
+      imageAlt: "Anime illustration of the Kaynx1 technical creator with a laptop, camera and projector",
+      theme: { bgA: "#07090d", bgB: "#182338", accent: "#f4f7ff" }
     },
     {
-      id: "slide-b",
-      status: "Released products",
-      title: "KATSURAGI",
-      subtitle: "Night-Illuminating Festival · AZUR LANE",
-      detailA: "Sculptor: Emi Hoshina",
-      detailB: "Painter: Ayumu Irisuaki",
-      cta: "Explore",
-      ctaHref: "/figures",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3.jpg"),
-      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-768x432.jpg"),
-      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_sp_v3.jpg"),
-      imageAlt: "Generic hero placeholder B",
-      theme: {
-        bgA: "#16181d",
-        bgB: "#3a404a",
-        accent: "#f7f7f7"
-      }
+      id: "ai-genius",
+      status: "10 live interactive demos",
+      title: "AI GENIUS",
+      subtitle: "Camera-powered interactive experiences",
+      detailA: "Camera vision · Motion capture · AR · Realtime play",
+      detailB: "Building and documenting interactive systems for real spaces",
+      cta: "Explore the games",
+      ctaHref: "/dev",
+      imageSrc: GAMES_HERO_ANIME_IMAGE,
+      imageMobileSrc: GAMES_HERO_ANIME_IMAGE,
+      imageAlt: "Anime illustration of the Kaynx1 creator using a professional mirrorless camera",
+      theme: { bgA: "#0d121a", bgB: "#24344f", accent: "#eef4ff" }
     },
     {
-      id: "slide-c",
-      status: "Released products",
-      title: "Aoba Minami",
-      subtitle: "Nice Shot Challenge!! · SORA-IRO UTILITY",
-      detailA: "Sculptor: MUKU / Yadokari",
-      detailB: "Painter: Emi Hoshina",
-      cta: "Explore",
-      ctaHref: "/figures",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2.jpg"),
-      imagePreviewSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-768x432.jpg"),
-      imageMobileSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_aoba_sp_v2.jpg"),
-      imageAlt: "Generic hero placeholder C",
-      theme: {
-        bgA: "#1d1a1a",
-        bgB: "#4d4640",
-        accent: "#fcfcfc"
-      }
+      id: "services",
+      status: "Software · Hardware · Support",
+      title: "BUILD BETTER",
+      subtitle: "Practical technology that keeps work moving",
+      detailA: "PC hardware · Business apps · Integrations · Deployment",
+      detailB: "From component-level fixes to production-ready systems",
+      cta: "View services",
+      ctaHref: "https://izzul.xyz/",
+      imageSrc: SERVICES_HERO_ANIME_IMAGE,
+      imageMobileSrc: SERVICES_HERO_ANIME_IMAGE,
+      imageAlt: "Anime illustration of the Kaynx1 creator repairing an open desktop computer",
+      theme: { bgA: "#080a10", bgB: "#1a2340", accent: "#ffffff" }
     }
   ],
   figures: [
     {
-      id: "z23",
-      group: "Pre-Order",
-      href: "/figures/z23/",
-      color: "#1a1818",
+      id: "ai-genius",
+      group: "Featured Work",
+      href: "/figures/ai-genius/",
+      externalHref: "https://aigenius.pages.dev/",
+      color: "#17263f",
       whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/index-z23-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/index-z23.jpg"),
-      series: "AZUR LANE",
-      name: "Z23",
-      caption: "Philosophy Sensei"
+      thumbSrc: "/images/games/aether-mirror.jpg",
+      imageSrc: GAMES_IMAGE,
+      series: "INTERACTIVE AI",
+      name: "AI Genius",
+      caption: "Ten live vision, motion and music experiences"
     },
     {
-      id: "katsuragi",
-      group: "Released products",
-      href: "/figures/katsuragi/",
-      color: "#19a4d0",
+      id: "custom-apps",
+      group: "Featured Work",
+      href: "/figures/custom-apps/",
+      externalHref: "https://izzul.xyz/",
+      color: "#19345c",
       whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/09/cover_katsuragi_v2-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/09/cover_katsuragi_v2.jpg"),
-      series: "AZUR LANE",
-      name: "KATSURAGI",
-      caption: "Night-Illuminating Festival"
+      thumbSrc: SERVICES_IMAGE,
+      imageSrc: SERVICES_IMAGE,
+      series: "PRODUCT DEVELOPMENT",
+      name: "Custom Applications",
+      caption: "Operational software, automation and integrations"
     },
     {
-      id: "aoba-minami",
-      group: "Released products",
-      href: "/figures/aoba-minami/",
-      color: "#55c3cd",
+      id: "vps-deck",
+      group: "Selected Systems",
+      href: "/figures/vps-deck/",
+      externalHref: "https://github.com/rexzai1992/Vps-Deck-Main",
+      color: "#101820",
       whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/mimeyoi-Aoba-Minami-nsc02.jpg"),
-      series: "SORA-IRO UTILITY",
-      name: "Aoba Minami",
-      caption: "Nice Shot Challenge!!"
+      thumbSrc: HERO_IMAGE,
+      imageSrc: HERO_IMAGE,
+      series: "INFRASTRUCTURE",
+      name: "VPS Deck",
+      caption: "Server operations made as easy as a click"
     },
     {
-      id: "le-malin-lapin",
-      group: "Released products",
-      href: "/figures/le-malin-lapin/",
-      color: "#A62648",
+      id: "tailgate-cctv",
+      group: "Selected Systems",
+      href: "/figures/tailgate-cctv/",
+      externalHref: "https://github.com/rexzai1992/Tailgate-CCTV",
+      color: "#223047",
       whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/08/mimeyoi-LeMalin-bunny13_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Le Malin",
-      caption: "Listless Lapin"
-    },
-    {
-      id: "kashino",
-      group: "Released products",
-      href: "/figures/kashino/",
-      color: "#cb90dd",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2024/03/mimeyoi-kashino16_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Kashino",
-      caption: "Hot Springs Relaxation"
-    },
-    {
-      id: "eimi",
-      group: "Released products",
-      href: "/figures/eimi/",
-      color: "#F896A4",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/12/mimeyoi_eimi00_revised_2_top-1.jpg"),
-      series: "Blue Archive",
-      name: "Eimi",
-      caption: "Izumimoto Eimi"
-    },
-    {
-      id: "javelin",
-      group: "Released products",
-      href: "/figures/javelin/",
-      color: "#A459E2",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/06/mimeyoi_Javelin02_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Javelin",
-      caption: "Blissful Purity"
-    },
-    {
-      id: "shoukaku",
-      group: "Released products",
-      href: "/figures/shoukaku/",
-      color: "#593D76",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2023/01/mimeyoi_Shoukaku_rq15_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Shoukaku",
-      caption: "Sororal Wings"
-    },
-    {
-      id: "super-sonico",
-      group: "Released products",
-      href: "/figures/super-sonico/",
-      color: "#FDFAF4",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/12/17477_02_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/12/17477_02_top-1.jpg"),
-      series: "SUPER SONICO",
-      name: "SUPER SONICO",
-      caption: "1♡th Merry Christmas!"
-    },
-    {
-      id: "rin-shirane",
-      group: "Released products",
-      href: "/figures/rin-shirane/",
-      color: "#293CAD",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/11/2089_top-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/11/2089_top.jpg"),
-      series: "Little Armory",
-      name: "Rin Shirane",
-      caption: "Beach Shootout"
-    },
-    {
-      id: "zuikaku",
-      group: "Released products",
-      href: "/figures/zuikaku/",
-      color: "#A2081B",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/09/mimeyoi_Zuikaku_rq16_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Zuikaku",
-      caption: "The Wind's True Name"
-    },
-    {
-      id: "bremerton",
-      group: "Released products",
-      href: "/figures/bremerton/",
-      color: "#73C6BE",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/04/mimeyoi-Bremerton05_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Bremerton",
-      caption: "Scorching - Hot Training"
-    },
-    {
-      id: "taihou",
-      group: "Released products",
-      href: "/figures/taihou/",
-      color: "#8D0512",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2022/01/mimeyoi_Taihou_rq16_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Taihou",
-      caption: "Enraptured Companion"
-    },
-    {
-      id: "bache",
-      group: "Released products",
-      href: "/figures/bache/",
-      color: "#FCB238",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/09/mimeyoi-Bache05_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Bache",
-      caption: "Fletcher-class destroyer"
-    },
-    {
-      id: "ning-hai",
-      group: "Released products",
-      href: "/figures/ning-hai/",
-      color: "#7E5ABC",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/03/mimeyoi_NINGHAI_tfed_07_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "NING HAI",
-      caption: "Summer Hunger"
-    },
-    {
-      id: "le-malin",
-      group: "Released products",
-      href: "/figures/le-malin/",
-      color: "#000000",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2021/02/mimeyoi-LeMalin02_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Le Malin",
-      caption: "The blade that protect Vichya Dominion"
-    },
-    {
-      id: "prince-of-wales",
-      group: "Released products",
-      href: "/figures/prince-of-wales/",
-      color: "#FFEACB",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/09/mimeyoi_tfed_POW_rq15_top.jpg"),
-      series: "AZUR LANE",
-      name: "Prince of Wales",
-      caption: "The Laureate's Victory Lap"
-    },
-    {
-      id: "duke-of-york",
-      group: "Released products",
-      href: "/figures/duke-of-york/",
-      color: "#392D30",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/03/39139_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/03/39139_top-1.jpg"),
-      series: "AZUR LANE",
-      name: "Duke of York",
-      caption: "Prestige of the Glorious Formula"
-    },
-    {
-      id: "chocola",
-      group: "Released products",
-      href: "/figures/chocola/",
-      color: "#F89FA1",
-      whiteText: true,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15449_top-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15449_top.jpg"),
-      series: "NEKOPARA",
-      name: "Chocola",
-      caption: "Race Queen ver."
-    },
-    {
-      id: "vanilla",
-      group: "Released products",
-      href: "/figures/vanilla/",
-      color: "#E5DCF8",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15472_top-1-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2020/01/15472_top-1.jpg"),
-      series: "NEKOPARA",
-      name: "Vanilla",
-      caption: "Race Queen ver."
-    },
-    {
-      id: "ping-hai",
-      group: "Released products",
-      href: "/figures/ping-hai/",
-      color: "#FAD7D8",
-      whiteText: false,
-      thumbSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2019/11/28736_top-244x300.jpg"),
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2019/11/28736_top.jpg"),
-      series: "AZUR LANE",
-      name: "PING HAI",
-      caption: "Merry Summer"
+      thumbSrc: "/images/games/face-analysis.jpg",
+      imageSrc: "/images/games/face-analysis.jpg",
+      series: "COMPUTER VISION",
+      name: "Tailgate CCTV",
+      caption: "Vision-assisted entry and safety monitoring"
     }
   ],
   featured: [
     {
-      id: "featured-01",
+      id: "featured-ai-genius",
       type: "game",
-      title: "Featured Concept",
-      summary: "Hero gameplay concept placeholder. Replace with your media anytime.",
-      stack: ["WebGL", "Motion", "Interaction"],
-      cta: "Open Case",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for game project"
+      title: "AI Genius",
+      summary: "A live portfolio of ten browser-based interactive experiences using body, hand, face, motion, AR and music input.",
+      stack: ["Computer Vision", "Realtime", "Web Games"],
+      cta: "Open live showcase",
+      href: "https://aigenius.pages.dev/",
+      imageSrc: GAMES_IMAGE,
+      imageAlt: "AI Genius live interactive demo showcase"
     },
     {
-      id: "featured-02",
+      id: "featured-services",
       type: "dev",
-      title: "Featured Build",
-      summary: "Production engineering placeholder with cinematic presentation.",
-      stack: ["Next.js", "Cloudflare", "Automation"],
-      cta: "Read Build",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for dev project"
+      title: "Custom App Development",
+      summary: "Premium applications and automation for teams that need better operations, clearer workflows and faster product delivery.",
+      stack: ["Next.js", "APIs", "Cloudflare", "Automation"],
+      cta: "View services",
+      href: "https://izzul.xyz/",
+      imageSrc: SERVICES_IMAGE,
+      imageAlt: "Kaynx1 custom application development service"
     }
   ],
   games: [
-    {
-      id: "game-01",
-      type: "game",
-      title: "Game Placeholder 01",
-      summary: "Drop your own screenshot and game details here.",
-      stack: ["Physics", "Realtime", "UX"],
-      cta: "Preview",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for game project"
-    },
-    {
-      id: "game-02",
-      type: "game",
-      title: "Game Placeholder 02",
-      summary: "Designed for handoff once your real media is ready.",
-      stack: ["Pose", "Audio", "Scoring"],
-      cta: "Preview",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for game project"
-    }
-  ],
+    ["body-shape", "Body Shape Challenge", "Interactive body-tracking movement challenge.", "Pose Tracking", "https://body-shape-challenge.pages.dev", "body-shape-challenge"],
+    ["hand-particle", "Hand Particle", "Hand-controlled particle interaction demo.", "Hand Tracking", "https://hand-partical.pages.dev", "hand-partical"],
+    ["aether-mirror", "Aether Mirror", "Futuristic mirror-style realtime AI visual experience.", "AI Mirror", "https://mecha-mirror.pages.dev/", "aether-mirror"],
+    ["face-analysis", "Face Analysis", "Realtime facial detection and visual intelligence demo.", "Face AI", "https://face-analysis.pages.dev", "face-analysis"],
+    ["rhythm-arena", "Rhythm Arena", "Motion and timing-based rhythm interaction experience.", "Rhythm Game", "https://rhythem-area.pages.dev", "rhythem-arena"],
+    ["fruit-ninja", "Fruit Ninja", "Fast motion-based slicing game experience.", "Motion Game", "https://fruit-ninja-3fe.pages.dev", "fruit-ninja"],
+    ["air-harp", "Air Harp", "A virtual harp controlled through hand movement.", "Music Interaction", "https://musical-air-harp.pages.dev", "air-harp"],
+    ["ar-goalkeeper", "AR Goal Keeper", "An augmented-reality goalkeeping challenge.", "AR Experience", "https://ar-goal-keeper.pages.dev/", "ar-goal-keeper"],
+    ["archery", "3D Archery", "Tournament-style 3D archery aiming and pull challenge.", "Sports Game", "https://3darchery.pages.dev/", "3d-archery"],
+    ["bowling", "3D Bowling", "A 3D bowling challenge with smooth aim-and-roll play.", "Sports Game", "https://3d-bowling-2qz.pages.dev", "3d-bowling"]
+  ].map(([id, title, summary, category, href, image]) => ({
+    id,
+    type: "game" as const,
+    title,
+    summary,
+    stack: [category, "Realtime", "Interactive Web"],
+    cta: "Play live",
+    href,
+    imageSrc: `/images/games/${image}.jpg`,
+    imageAlt: `${title} interactive game preview`
+  })),
   devs: [
     {
-      id: "dev-01",
+      id: "dev-2fast",
       type: "dev",
-      title: "Dev Placeholder 01",
-      summary: "System architecture and deployment portfolio slot.",
-      stack: ["API", "Database", "Workers"],
-      cta: "Inspect",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_katsuragi_v3-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for developer project"
+      title: "2Fast WhatsApp Automation",
+      summary: "Multi-tenant WhatsApp Business automation with onboarding, campaigns, templates, webhooks and lead management.",
+      stack: ["React", "TypeScript", "PostgreSQL", "Meta Cloud API"],
+      cta: "View platform",
+      href: "https://2fast.xyz/",
+      imageSrc: SERVICES_IMAGE,
+      imageAlt: "2Fast WhatsApp automation platform"
     },
     {
-      id: "dev-02",
+      id: "dev-vps-deck",
       type: "dev",
-      title: "Dev Placeholder 02",
-      summary: "Scalable product engineering and delivery slot.",
-      stack: ["CI/CD", "Observability", "Performance"],
-      cta: "Inspect",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2025/08/kv_aoba_minami_v2-1024x576.jpg"),
-      imageAlt: "Reference photo placeholder for developer project"
+      title: "VPS Deck",
+      summary: "A visual control plane that makes VPS monitoring and day-to-day server operations accessible.",
+      stack: ["Go", "Linux", "Monitoring", "Automation"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Vps-Deck-Main",
+      imageSrc: HERO_IMAGE,
+      imageAlt: "VPS Deck infrastructure management project"
+    },
+    {
+      id: "dev-photobooth",
+      type: "dev",
+      title: "Event Photobooth Platform",
+      summary: "Automated capture, branded output, QR retrieval and print workflows designed for events and attractions.",
+      stack: ["TypeScript", "Camera", "QR Workflow", "Printing"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Photobooth-2fast.xyz",
+      imageSrc: "/images/games/aether-mirror.jpg",
+      imageAlt: "Interactive event photobooth experience"
+    },
+    {
+      id: "dev-tailgate",
+      type: "dev",
+      title: "Tailgate CCTV",
+      summary: "Computer-vision monitoring for entry flows, occupancy behaviour and tailgating events.",
+      stack: ["Python", "OpenCV", "Tracking", "CCTV"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Tailgate-CCTV",
+      imageSrc: "/images/games/face-analysis.jpg",
+      imageAlt: "Computer vision security monitoring project"
+    },
+    {
+      id: "dev-nric",
+      type: "dev",
+      title: "NRIC Reader Integration",
+      summary: "A practical hardware and software bridge for reading Malaysian identity cards through ACS devices.",
+      stack: ["Python", "Smart Card", "Hardware", "Desktop"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/NRIC-Reader-ACS-Driver-",
+      imageSrc: HERO_IMAGE,
+      imageAlt: "Smart card reader hardware integration"
+    },
+    {
+      id: "dev-agentportal",
+      type: "dev",
+      title: "Agent Portal",
+      summary: "A TypeScript product workspace built around streamlined customer and operational workflows.",
+      stack: ["TypeScript", "Product UI", "APIs", "Operations"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Agentportal",
+      imageSrc: SERVICES_IMAGE,
+      imageAlt: "Agent Portal product interface"
     }
   ],
   sections: {
-    featured: {
-      kicker: "Featured",
-      heading: "Signature Work"
-    },
-    games: {
-      kicker: "Game Projects",
-      heading: "Playable Direction"
-    },
-    dev: {
-      kicker: "Dev Projects",
-      heading: "Production Engineering"
-    },
+    featured: { kicker: "Selected", heading: "Signature Work" },
+    games: { kicker: "Interactive Portfolio", heading: "Games That Respond To You" },
+    dev: { kicker: "Development", heading: "Systems Built For Real Work" },
     news: {
-      kicker: "NEWS",
-      heading: "Release information",
-      lead: "5.29.2026",
-      imageSrc: r2Asset("mimeyoi/wp/wp-content/uploads/2026/02/kv_z23_v1-1024x576.jpg"),
-      imageAlt: "Release information product visual",
+      kicker: "Now",
+      heading: "Building Across Software And Space",
+      lead: "2026",
+      imageSrc: HERO_IMAGE,
+      imageAlt: "Kaynx1 technology installation concept",
       lines: [
-        "## Resale announcement",
-        "Release information",
-        "Azur Lane Le Malin 'Listless Lapin'",
-        "A resale has been confirmed for this figure.",
-        "Thank you for the many requests and inquiries we have received since the first release.",
-        "If you missed the first release, or recently discovered this character, please consider the new reservation period.",
-        "Production quantity will be decided based on reservation volume."
+        "## Available for ambitious technical work",
+        "AI automation, interactive installations and product engineering",
+        "Kaynx1 brings software, devices and real-world operations together.",
+        "Current work spans computer vision, messaging platforms, kiosks, access systems and interactive experiences."
       ]
     },
     about: {
-      kicker: "About mimeyoi",
-      heading: "Figure brand crafting detailed collectible worlds.",
-      lead:
-        "MIMEYOI presents premium scale figures with cinematic presentation. This page keeps the reference motion tone and minimalist structure for product-focused storytelling."
+      kicker: "Resume",
+      heading: "Izzul Fitree — Technical Product Developer",
+      lead: "I design, build, deploy and support software platforms and physical technology installations, combining engineering depth with practical product and business instincts.",
+      imageSrc: HERO_ANIME_IMAGE,
+      imageAlt: "Anime illustration of Izzul Fitree as the Kaynx1 technical creator",
+      lines: [
+        "## Experience",
+        "### Product Developer / Technical Support — Crave Asia Sdn Bhd",
+        "January 2025 — Present · AI solutions, automation workflows, kiosks, POS, payment terminals, access control, projection mapping, product demos and technical support.",
+        "### Marketing Executive / Technical Operations Support — Kiddo Heritage Sdn Bhd",
+        "December 2024 — Present · Digital campaigns, theme-park operations, arcade and attraction support, events, ticketing and visitor-experience improvements.",
+        "## Core skills",
+        "AI automation · React · TypeScript · Node.js · Python · PostgreSQL · OpenCV · MediaPipe · WhatsApp Business API · Telegram bots · Cloudflare · Hardware integration",
+        "## Education",
+        "Diploma in Marketing — Politeknik Sultan Abdul Halim Mu'adzam Shah (POLIMAS). Head of Department Award twice and Best Student in Economics.",
+        "## Languages",
+        "Malay — Native · English — Professional · Mandarin — Basic",
+        "LINK: GitHub profile | https://github.com/rexzai1992",
+        "## Focus areas",
+        "Custom applications · AI automation · Computer vision · Interactive games · Kiosks, POS and projection mapping",
+        "LINK: Explore services | https://izzul.xyz/"
+      ]
     },
     contact: {
-      kicker: "Contact/FAQ",
-      heading: "Please read before contacting us.",
-      lead: "For product defects, warranty questions, product availability, release timing, counterfeit goods, and OEM / ODM development inquiries.",
+      kicker: "Contact",
+      heading: "Let’s Build Something Useful.",
+      lead: "Available for product development, AI automation, interactive experiences and technical integration work in Malaysia and remotely.",
       lines: [
-        "## Notes before inquiry",
-        "Product defects should be reported to the customer support listed on the package or to the shop where the item was purchased.",
-        "Please include photos when reporting a defect so the condition can be checked clearly.",
-        "## Warranty",
-        "### The package was damaged",
-        "The package is shipping material. Minor scratches or dents during transit may not qualify for replacement unless the figure itself is affected.",
-        "## Products",
-        "### Where can MIMEYOI products be purchased?",
-        "This website is not an online store. Please use the retailer links on each figure detail page and contact the retailer directly.",
-        "### When is the release date?",
-        "Shipping information is announced on the News page. Arrival dates can differ depending on retailer region.",
-        "### Are there resale plans?",
-        "Resale announcements are posted on this website when confirmed.",
-        "## Counterfeit products",
-        "Counterfeit goods sold through auctions or private listings are not eligible for product support.",
-        "## OEM / ODM development",
-        "Scale figure and character figure OEM / ODM development inquiries are welcome.",
-        "FIELD: Name",
-        "FIELD: Email address",
-        "FIELD: Subject",
-        "FIELD: Inquiry details",
-        "UPLOAD: Attachment image",
-        "SUBMIT: Send this message",
-        "THANKS: THANK YOU / FOR THE MESSAGE."
+        "## Start a conversation",
+        "Tell me what is slowing your team down, what you want customers to experience, or what system needs to work better.",
+        "LINK: Email Izzul | mailto:izzul@2fast.xyz",
+        "LINK: Explore services | https://izzul.xyz/",
+        "LINK: GitHub | https://github.com/rexzai1992",
+        "LINK: AI Genius games | https://aigenius.pages.dev/",
+        "Malaysia · +60 11-1117 1350"
       ]
     }
   }
 };
 
 export function getFigureSlugFromHref(href: string): string {
-  return href
-    .split("/")
-    .filter(Boolean)
-    .pop() ?? "";
+  return href.split("/").filter(Boolean).pop() ?? "";
 }
 
 export function getFigureBySlug(slug: string): FigureItem | undefined {
   return SITE_CONFIG.figures.find((figure) => getFigureSlugFromHref(figure.href) === slug);
+}
+
+export function getPortfolioItemBySlug(slug: string): PortfolioItem | undefined {
+  return [...SITE_CONFIG.devs, ...SITE_CONFIG.games].find((item) => item.id === slug);
 }

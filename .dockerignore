@@ -1,0 +1,16 @@
+node_modules
+.next
+.wrangler
+out
+.git
+.dev.vars
+.DS_Store
+coverage
+test-results
+playwright-report
+reference-recordings
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

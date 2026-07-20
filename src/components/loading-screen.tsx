@@ -10,7 +10,7 @@ interface LoadingScreenProps {
   onComplete?: () => void;
 }
 
-// mimeyoi.co timing: logo wipe 0.2s-2.0s, page mask reveal 1.8s-3.3s.
+// Kaynx1 intro timing: word fill, page fade, then content entrance.
 const REVEAL_MS = 1800;
 const TOTAL_MS = 3400;
 const REDUCED_TOTAL_MS = 200;
@@ -53,7 +53,9 @@ export function LoadingScreen({ onReveal, onComplete }: LoadingScreenProps) {
     <>
       <div className="first-load-intro__veil" aria-hidden="true" />
       <div className="first-load-intro" aria-hidden="true">
-        <p className="first-load-intro__logo">MIMEYOI</p>
+        <p className="first-load-intro__logo">
+          <span data-text="KAYNX1">KAYNX1</span>
+        </p>
       </div>
     </>
   );
