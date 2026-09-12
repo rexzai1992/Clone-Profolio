@@ -653,7 +653,8 @@ export function FiguresIndex({
       const elapsedSeconds = Math.min(64, currentTime - previousTime) / 1000;
       previousTime = currentTime;
 
-      if (currentTime >= autoPauseUntilRef.current && !dragStateRef.current.isDown) {
+      const allowsAutoDrift = window.innerWidth > 768;
+      if (allowsAutoDrift && currentTime >= autoPauseUntilRef.current && !dragStateRef.current.isDown) {
         moveRailBy(-autoDriftSpeed * elapsedSeconds);
       }
 

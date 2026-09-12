@@ -253,6 +253,17 @@ export const SITE_CONFIG: SiteConfig = {
   })),
   devs: [
     {
+      id: "dev-public-transport-live",
+      type: "dev",
+      title: "Public Transport Live",
+      summary: "A live Malaysia and Singapore public-transport map and journey planner with realtime vehicles, multimodal routing, stop alerts, crowd reports and an Android app.",
+      stack: ["TypeScript", "GTFS Realtime", "Journey Planning", "Capacitor"],
+      cta: "Open live project",
+      href: "https://public.kaynx1.com/",
+      imageSrc: "/images/projects/public-transport-live-v2.png",
+      imageAlt: "Public Transport Live map showing Kuala Lumpur rail routes and journey-planning coverage"
+    },
+    {
       id: "dev-2fast",
       type: "dev",
       title: "2Fast WhatsApp Automation",
@@ -269,8 +280,8 @@ export const SITE_CONFIG: SiteConfig = {
       title: "VPS Deck",
       summary: "A visual control plane that makes VPS monitoring and day-to-day server operations accessible.",
       stack: ["Go", "Linux", "Monitoring", "Automation"],
-      cta: "View on GitHub",
-      href: "https://github.com/rexzai1992/Vps-Deck-Main",
+      cta: "Open live project",
+      href: "https://vps.izzul.xyz/",
       imageSrc: "/images/projects/vps-deck.png",
       imageAlt: "VPS Deck infrastructure management project"
     },
@@ -280,8 +291,8 @@ export const SITE_CONFIG: SiteConfig = {
       title: "Deep Blue Photobooth",
       summary: "An event photobooth platform with guided capture, layout selection, editing, gallery management, QR downloads, cloud media storage and Windows kiosk deployment.",
       stack: ["React", "Cloudflare R2", "Supabase", "Electron Kiosk"],
-      cta: "View on GitHub",
-      href: "https://github.com/rexzai1992/Photobooth-2fast.xyz",
+      cta: "Open live project",
+      href: "https://photobooth.izzul.xyz/",
       imageSrc: "/images/projects/deep-blue-photobooth-v2.png",
       imageAlt: "Deep Blue Photobooth capture kiosk, event gallery and print workflow"
     },

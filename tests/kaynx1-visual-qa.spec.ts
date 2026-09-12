@@ -108,8 +108,8 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     for (const collection of [
-      { path: "/games", heading: "Work & Games", count: 30 },
-      { path: "/dev", heading: "Work & Games", count: 30 }
+      { path: "/games", heading: "Work & Games", count: 31 },
+      { path: "/dev", heading: "Work & Games", count: 31 }
     ]) {
       await page.goto(collection.path, { waitUntil: "networkidle" });
       await page.waitForTimeout(4200);
@@ -160,5 +160,25 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
       await page.waitForTimeout(500);
       await expect(carousel).toHaveAttribute("data-nav", "index");
     }
+  });
+
+  test("mobile work carousel keeps one complete project card inside the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/dev", { waitUntil: "networkidle" });
+    await page.waitForTimeout(4200);
+
+    const centeredCard = page.locator(".figures-index__grid-item.is-centered .figures-index__link");
+    await expect(centeredCard).toHaveCount(1);
+    const cardBox = await centeredCard.boundingBox();
+    expect(cardBox).not.toBeNull();
+    expect(cardBox!.x).toBeGreaterThanOrEqual(0);
+    expect(cardBox!.x + cardBox!.width).toBeLessThanOrEqual(390);
+
+    const initialTransform = await page.locator(".figures-index__grid-item").first().evaluate((node) => getComputedStyle(node).transform);
+    await page.waitForTimeout(1800);
+    const settledTransform = await page.locator(".figures-index__grid-item").first().evaluate((node) => getComputedStyle(node).transform);
+    expect(settledTransform).toBe(initialTransform);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    await page.screenshot({ path: "/tmp/kaynx1-mobile-dev-responsive.png", fullPage: false });
   });
 });
