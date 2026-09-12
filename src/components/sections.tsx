@@ -72,84 +72,56 @@ function PortfolioCard({ item, index }: { item: PortfolioItem; index: number }) 
   );
 }
 
-function ContactLine({ line }: { line: string }) {
-  if (line.startsWith("## ")) {
-    return <h3>{line.slice(3)}</h3>;
-  }
-  if (line.startsWith("### ")) {
-    return <h4>{line.slice(4)}</h4>;
-  }
-  if (line.startsWith("LINK: ")) {
-    const [label, href] = line.slice(6).split(" | ");
-    const external = href?.startsWith("http");
-    return (
-      <a className="contact-link" href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>
-        {label}
-      </a>
-    );
-  }
-  if (line.startsWith("FIELD: ")) {
-    return (
-      <label className="contact-form-field">
-        <span>{line.slice(7)}</span>
-        <input disabled aria-label={line.slice(7)} />
-      </label>
-    );
-  }
-  if (line.startsWith("UPLOAD: ")) {
-    return (
-      <label className="contact-form-field contact-form-field--upload">
-        <span>{line.slice(8)}</span>
-        <input disabled aria-label={line.slice(8)} />
-      </label>
-    );
-  }
-  if (line.startsWith("SUBMIT: ")) {
-    return (
-      <button className="contact-submit" type="button" disabled>
-        {line.slice(8)}
-      </button>
-    );
-  }
-  if (line.startsWith("THANKS: ")) {
-    const [title, message] = line.slice(8).split(" / ");
-    return (
-      <div className="contact-thanks">
-        <strong>{title}</strong>
-        {message ? <span>{message}</span> : null}
-      </div>
-    );
-  }
+const RESUME_SKILLS = [
+  ["AI & Automation", ["AI Workflow Dev", "Prompt Engineering", "Stable Diffusion", "ControlNet", "Computer Vision", "ML Integration"]],
+  ["Development", ["React", "TypeScript", "Node.js", "Python", "REST APIs", "Webhooks", "PostgreSQL", "Supabase", "Firebase", "Git / GitHub"]],
+  ["Computer Vision", ["OpenCV", "MediaPipe", "Motion Tracking", "Hand / Pose", "Object Detection"]],
+  ["Messaging", ["WhatsApp Business API", "WhatsApp Cloud API", "Embedded Signup", "Telegram Bots", "Chatbots"]],
+  ["Systems & Hardware", ["Kiosks", "POS", "Turnstile Access", "Payment Terminals", "Projection Mapping", "Watchout", "AV Setup", "PC Troubleshooting"]],
+  ["Tools", ["VS Code", "Claude Code", "OpenAI Codex", "Postman", "Cloudflare", "Canva", "CapCut"]]
+] as const;
 
-  return <p>{line}</p>;
-}
+const RESUME_PROJECTS = [
+  {
+    title: "2Fast — WhatsApp Automation Platform",
+    role: "Founder / Dev",
+    summary: "Multi-tenant WhatsApp Business automation platform with embedded-signup onboarding, broadcast campaigns, template management, webhook processing and a real-time dashboard.",
+    tags: ["React", "TypeScript", "Node.js", "PostgreSQL", "Supabase", "Meta Cloud API", "Cloudflare"]
+  },
+  {
+    title: "AI Genius — AI Image Generation",
+    role: "Founder / Dev",
+    summary: "Offline AI artwork and coloring-page generator for theme parks and events, with QR retrieval, queue management, face enhancement and automated printing.",
+    tags: ["Stable Diffusion", "ControlNet", "Python", "OpenCV", "React", "WebSocket"]
+  },
+  {
+    title: "Motion Capture & Floor Projection Games",
+    role: "Developer",
+    summary: "Computer-vision experiences with full-body, hand and gesture tracking plus motion-driven floor projections and real-time multi-person interaction.",
+    tags: ["OpenCV", "MediaPipe", "PixiJS", "Three.js", "Python"]
+  },
+  {
+    title: "Telegram Server Management Bot",
+    role: "Developer",
+    summary: "Infrastructure monitoring and remote administration for CPU, memory, disk, services, logs, alerts and remote restarts across multiple servers.",
+    tags: ["Telegram Bot API", "Node.js", "Linux", "SSH", "REST API"]
+  },
+  {
+    title: "Projection Mapping & Event Photobooth",
+    role: "Specialist",
+    summary: "Multi-projector mapping installations and automated photobooth systems with instant capture, QR retrieval and branded print management.",
+    tags: ["Watchout", "Projection Mapping", "AV Systems", "QR Workflow"]
+  }
+] as const;
 
-function groupAboutLines(lines: string[]) {
-  const groups: Array<{ title: string; lines: string[] }> = [];
-  let current: { title: string; lines: string[] } | null = null;
-
-  lines.forEach((line) => {
-    if (line.startsWith("## ")) {
-      current = { title: line.slice(3), lines: [] };
-      groups.push(current);
-      return;
-    }
-
-    if (!current) {
-      current = { title: "Profile", lines: [] };
-      groups.push(current);
-    }
-    current.lines.push(line);
-  });
-
-  return groups;
+function ResumeTags({ items }: { items: readonly string[] }) {
+  return <div className="resume-tags">{items.map((item) => <span key={item}>{item}</span>)}</div>;
 }
 
 export function PageSections({ only }: { only?: PageSectionId }) {
   const { site } = useSiteContent();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [newsTitle, newsSubtitle, ...newsBody] = site.sections.news.lines ?? [];
-  const aboutGroups = groupAboutLines(site.sections.about.lines ?? []);
   const aboutImage = site.sections.about.imageSrc ?? site.heroSlides[0]?.imageSrc;
   const contactLines = site.sections.contact.lines ?? [];
   const contactTitle = contactLines.find((line) => line.startsWith("## "))?.slice(3) ?? "Start a conversation";
@@ -251,65 +223,71 @@ export function PageSections({ only }: { only?: PageSectionId }) {
 
       {shouldRender(only, "about") ? (
         <section id="about" className="section section--about">
-          <div className="resume-hero">
-            <div className="resume-hero__copy">
-              <Reveal as="p" className="section__kicker about-profile__kicker" delay={0.06}>
-                {site.sections.about.kicker}
-              </Reveal>
-              <Reveal as="h2" className="resume-hero__heading" delay={0.12}>
-                {site.sections.about.heading}
-              </Reveal>
-              <Reveal as="p" className="resume-hero__lead" delay={0.16}>
-                {site.sections.about.lead}
-              </Reveal>
-              <Reveal className="resume-hero__status" delay={0.2}>
-                <span className="resume-hero__status-dot" aria-hidden="true" />
-                Available for selected projects · Malaysia / Remote
-              </Reveal>
-            </div>
-
-            <div className="resume-hero__visual" aria-hidden={!aboutImage}>
-              {aboutImage ? (
-                <ImageReveal
-                  src={aboutImage}
-                  alt={site.sections.about.imageAlt ?? `${site.ownerName} profile artwork`}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 42vw"
-                  wrapperClassName="resume-hero__image-wrap"
-                  imageClassName="resume-hero__image"
-                  delay={0.08}
-                />
-              ) : null}
-              <span className="resume-hero__visual-label">KAYNX1 / PROFILE 01</span>
-            </div>
-            <p className="resume-hero__monogram" aria-hidden="true">KX</p>
-          </div>
-
-          {aboutGroups.length ? (
-            <Reveal className="resume-layout" delay={0.18}>
-              <aside className="resume-aside">
-                <p className="resume-aside__label">Profile / 2026</p>
-                <p className="resume-aside__statement">I turn operational problems into software people can actually use.</p>
-                <div className="resume-aside__links">
-                  <a href="mailto:izzul@2fast.xyz">Email me <span>↗</span></a>
-                  <a href="https://github.com/rexzai1992" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
-                </div>
-              </aside>
-              <div className="resume-list">
-                {aboutGroups.map((group, groupIndex) => (
-                  <article className="resume-entry" key={group.title} data-kind={groupIndex === 0 ? "experience" : "detail"}>
-                    <p className="resume-entry__index">{String(groupIndex + 1).padStart(2, "0")}</p>
-                    <h3>{group.title}</h3>
-                    <div className="resume-entry__body">
-                      {group.lines.map((line, index) => (
-                        <ContactLine key={`${line}-${index}`} line={line} />
-                      ))}
-                    </div>
-                  </article>
-                ))}
+          <Reveal className="resume-sheet" delay={0.06}>
+            <header className="resume-sheet__header">
+              <p className="resume-sheet__eyebrow"><span /> Systems · AI · Automation <b>/</b> Status: open to work</p>
+              <h1><strong>IZZUL</strong> FITREE</h1>
+              <p className="resume-sheet__roles">Technical Product Developer <b>/</b> AI Automation Specialist <b>/</b> Business Systems Integrator</p>
+              <div className="resume-sheet__contact">
+                <span>Malaysia</span>
+                <a href="mailto:izzul@2fast.xyz">izzul@2fast.xyz</a>
+                <a href="https://2fast.xyz" target="_blank" rel="noreferrer">2fast.xyz</a>
+                <a href="https://github.com/rexzai1992" target="_blank" rel="noreferrer">github.com/rexzai1992</a>
               </div>
-            </Reveal>
-          ) : null}
+            </header>
+
+            <div className="resume-sheet__grid">
+              <main className="resume-sheet__main">
+                <section className="resume-block">
+                  <h2><span>01</span> Profile</h2>
+                  <p className="resume-profile">Technical Product Developer building across the full lifecycle — <strong>design, build, deploy and support</strong> — for software platforms and physical installations. Hands-on with <strong>AI automation, WhatsApp Business solutions, computer-vision experiences and interactive entertainment tech</strong>, plus kiosks, POS, access control and projection mapping.</p>
+                </section>
+
+                <section className="resume-block">
+                  <h2><span>02</span> Experience</h2>
+                  <div className="resume-timeline">
+                    <article>
+                      <div className="resume-job__heading"><h3>Product Developer / Technical Support</h3><time>Jan 2025 — Present</time></div>
+                      <a href="https://crave.asia" target="_blank" rel="noreferrer">Crave Asia Sdn Bhd</a>
+                      <ul><li>Develop AI-powered business solutions and end-to-end automation workflows.</li><li>Configure and deploy kiosks, POS systems, payment terminals and turnstile access control.</li><li>Deliver projection mapping, UI/UX testing, product demos, technical training and support.</li></ul>
+                      <p className="resume-impact"><b>Impact</b> Shipped kiosk and POS deployments and automation workflows that improved operational efficiency.</p>
+                    </article>
+                    <article>
+                      <div className="resume-job__heading"><h3>Marketing Executive / Technical Operations Support</h3><time>Dec 2024 — Present</time></div>
+                      <strong className="resume-company">Kiddo Heritage Sdn Bhd</strong>
+                      <ul><li>Run digital campaigns and produce multi-platform social content.</li><li>Support theme-park operations, arcade machines, attractions, events and ticketing.</li><li>Monitor customer feedback and improve the visitor experience.</li></ul>
+                      <p className="resume-impact"><b>Impact</b> Supported Wonderpark campaigns and produced content that increased customer engagement.</p>
+                    </article>
+                  </div>
+                </section>
+
+                <section className="resume-block">
+                  <h2><span>03</span> Selected Projects</h2>
+                  <div className="resume-projects">
+                    {RESUME_PROJECTS.map((project) => <article key={project.title}><div><h3>{project.title}</h3><span>{project.role}</span></div><p>{project.summary}</p><ResumeTags items={project.tags} /></article>)}
+                  </div>
+                </section>
+              </main>
+
+              <aside className="resume-sheet__side">
+                <section className="resume-block">
+                  <h2><span>04</span> Skills</h2>
+                  {RESUME_SKILLS.map(([group, skills]) => <div className="resume-skill-group" key={group}><h3>// {group}</h3><ResumeTags items={skills} /></div>)}
+                </section>
+                <section className="resume-block">
+                  <h2><span>05</span> Education</h2>
+                  <h3 className="resume-education">Diploma in Marketing</h3>
+                  <p>Politeknik Sultan Abdul Halim Mu&apos;adzam Shah (POLIMAS)</p>
+                  <ul className="resume-awards"><li>Head of Department Award (×2)</li><li>Best Student in Economics</li></ul>
+                </section>
+                <section className="resume-block">
+                  <h2><span>06</span> Languages</h2>
+                  <div className="resume-languages"><p><span>Malay</span><b>Native</b></p><p><span>English</span><b>Professional</b></p><p><span>Mandarin</span><b>Basic</b></p></div>
+                </section>
+              </aside>
+            </div>
+            <footer className="resume-sheet__footer"><span>Izzul Fitree</span><span>&gt; Technical Product Developer · Résumé 2026</span></footer>
+          </Reveal>
         </section>
       ) : null}
 

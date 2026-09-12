@@ -30,6 +30,16 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.screenshot({ path: "/tmp/kaynx1-nav-open.png", fullPage: false });
   });
 
+  test("hero image opens the active slide destination", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(3800);
+
+    await page.locator(".hero-slideshow__slide.is-active .hero-slideshow__media").click({ position: { x: 720, y: 420 } });
+
+    await expect(page).toHaveURL(/\/dev\/?$/);
+  });
+
   test("mobile nav keeps close toggle and door switch visible", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "networkidle" });
@@ -37,13 +47,28 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.locator(".auto-header__menu").click();
     await page.waitForTimeout(1000);
     await expect(page.locator(".site-root")).toHaveClass(/is-nav-open/);
-    await expect(page.locator(".nav-overlay__close")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Close navigation" })).toBeVisible();
     await page.screenshot({ path: "/tmp/kaynx1-mobile-nav-open.png", fullPage: false });
 
     await page.locator(".nav-overlay__door-btn").click();
     await page.waitForTimeout(900);
     await expect(page.locator(".nav-overlay")).toHaveClass(/is-door-open/);
     await page.screenshot({ path: "/tmp/kaynx1-mobile-door-open.png", fullPage: false });
+  });
+
+  test("resume matches the technical editorial layout on desktop and mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/about", { waitUntil: "networkidle" });
+    await page.waitForTimeout(3800);
+    await expect(page.locator(".resume-sheet__header h1")).toContainText("IZZUL");
+    await expect(page.locator(".resume-block")).toHaveCount(6);
+    await expect(page.locator(".resume-projects article")).toHaveCount(5);
+    await page.screenshot({ path: "/tmp/kaynx1-resume-desktop.png", fullPage: true });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator(".resume-sheet__grid")).toBeVisible();
+    await expect(page.locator(".resume-job__heading").first()).toBeVisible();
+    await page.screenshot({ path: "/tmp/kaynx1-resume-mobile.png", fullPage: true });
   });
 
   test("figures rail wheel inertia, hover color, index and idle clock work", async ({ page }) => {
@@ -83,8 +108,8 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     for (const collection of [
-      { path: "/games", heading: "Work & Games", count: 16 },
-      { path: "/dev", heading: "Work & Games", count: 16 }
+      { path: "/games", heading: "Work & Games", count: 30 },
+      { path: "/dev", heading: "Work & Games", count: 30 }
     ]) {
       await page.goto(collection.path, { waitUntil: "networkidle" });
       await page.waitForTimeout(4200);
@@ -97,7 +122,7 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
       const carouselColors = await page.locator(".figures-index__link").evaluateAll((links) =>
         links.map((link) => getComputedStyle(link).getPropertyValue("--figure-card-color").trim())
       );
-      expect(new Set(carouselColors).size).toBe(collection.count);
+      expect(new Set(carouselColors).size).toBe(Math.min(collection.count, 16));
       await page.locator(".figures-index__grid-item.is-active .figures-index__image").first().hover({ force: true });
       await page.waitForTimeout(250);
       const engagedColor = await carousel.evaluate((node) => getComputedStyle(node).getPropertyValue("--figure-character").trim());
@@ -109,6 +134,27 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
       await page.waitForTimeout(900);
       const secondTransform = await page.locator(".figures-index__grid-item").first().evaluate((node) => getComputedStyle(node).transform);
       expect(secondTransform).not.toBe(firstTransform);
+
+      await page.getByRole("button", { name: "Index" }).click();
+      await expect(page.locator(".figures-index__index-link")).toHaveCount(collection.count);
+      const generatedGameCovers = page.locator('.figures-index__index-visual img[src*="-cover-v2.webp"]');
+      await expect(generatedGameCovers).toHaveCount(10);
+      await generatedGameCovers.first().scrollIntoViewIfNeeded();
+      await expect.poll(() => generatedGameCovers.first().evaluate((image) =>
+        image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
+      )).toBe(true);
+      await expect(page.locator(".figures-index__index-copy strong").filter({ hasText: "CardBiz ECR Terminal" })).toBeVisible();
+      await expect(page.locator(".figures-index__index-heading h2")).toHaveText([
+        "Business Platforms",
+        "Infrastructure & Automation",
+        "AI & Computer Vision",
+        "Hardware Integrations",
+        "Security & Developer Tools",
+        "Creative Technology",
+        "Interactive Games"
+      ]);
+      await expect(page.getByText("Private case study")).toHaveCount(7);
+      await page.screenshot({ path: `/tmp/kaynx1-${collection.path.slice(1)}-index-redesign.png`, fullPage: true });
 
       await page.getByRole("button", { name: "Index" }).click();
       await page.waitForTimeout(500);

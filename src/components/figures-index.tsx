@@ -28,7 +28,17 @@ interface LenisLike {
   scrollTo: (target: number, options?: { duration?: number; immediate?: boolean }) => void;
 }
 
-const FIGURE_GROUPS: FigureItem["group"][] = ["Development", "Interactive Games", "Featured Work", "Selected Systems"];
+const FIGURE_GROUPS: FigureItem["group"][] = [
+  "Business Platforms",
+  "Infrastructure & Automation",
+  "AI & Computer Vision",
+  "Hardware Integrations",
+  "Security & Developer Tools",
+  "Creative Technology",
+  "Interactive Games",
+  "Featured Work",
+  "Selected Systems"
+];
 const HOVER_LEAVE_GRACE_MS = 1200;
 const FIGURE_SWITCH_GRACE_MS = 120;
 const CARD_NAV_TRANSITION_MS = 450;
@@ -1034,13 +1044,12 @@ export function FiguresIndex({
         <div className="figures-index__index">
           {figuresByGroup.map(({ group, figures }) => (
             <div className="figures-index__index-wrap scroll-reveal" data-reveal key={group}>
-              <h2>{group}</h2>
-              <div className="figures-index__index-info" aria-live="polite">
-                <span>{activeFigure?.name}</span>
-                <span>{showDescriptions ? activeFigure?.caption : activeFigure?.series}</span>
+              <div className="figures-index__index-heading">
+                <p>{String(figures.length).padStart(2, "0")} projects</p>
+                <h2>{group}</h2>
               </div>
               <div className="figures-index__index-grid">
-                {figures.map((figure) => (
+                {figures.map((figure, index) => (
                   <a
                     href={figure.href}
                     className="figures-index__index-link"
@@ -1049,7 +1058,19 @@ export function FiguresIndex({
                     onMouseEnter={() => handleFigureEnter(figure)}
                     onFocus={() => handleFigureEnter(figure)}
                   >
-                    <img src={figure.thumbSrc} alt={`${figure.name} project preview`} loading="lazy" />
+                    <span className="figures-index__index-visual">
+                      <img src={figure.thumbSrc} alt="" loading="lazy" />
+                      <span className="figures-index__index-number">{String(index + 1).padStart(2, "0")}</span>
+                    </span>
+                    <span className="figures-index__index-copy">
+                      <span className="figures-index__index-series">
+                        {figure.series}
+                        {figure.visibility === "private" ? <em>Private case study</em> : null}
+                      </span>
+                      <strong>{figure.name}</strong>
+                      <span className="figures-index__index-caption">{figure.caption}</span>
+                      <span className="figures-index__index-open" aria-hidden="true">↗</span>
+                    </span>
                   </a>
                 ))}
               </div>

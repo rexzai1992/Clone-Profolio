@@ -53,13 +53,20 @@ export function PortfolioDetailView({ item, nextItem, index, total }: PortfolioD
 
       <section className="case-study__hero">
         <div className="case-study__intro">
-          <p className="case-study__eyebrow">{category} · {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}</p>
+          <p className="case-study__eyebrow">
+            {category} · {item.visibility === "private" ? "Private case study · " : ""}{String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+          </p>
           <h1>{item.title}</h1>
           <p className="case-study__summary">{item.summary}</p>
           <ul aria-label="Technologies used">
             {item.stack.map((technology) => <li key={technology}>{technology}</li>)}
           </ul>
-          <a className="case-study__primary" href={item.href} target="_blank" rel="noreferrer">
+          <a
+            className="case-study__primary"
+            href={item.href}
+            target={/^https?:\/\//.test(item.href) ? "_blank" : undefined}
+            rel={/^https?:\/\//.test(item.href) ? "noreferrer" : undefined}
+          >
             {item.cta} <span>↗</span>
           </a>
         </div>

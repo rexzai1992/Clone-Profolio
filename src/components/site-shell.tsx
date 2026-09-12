@@ -56,14 +56,39 @@ const CAROUSEL_THEMES = [
   { color: "#e8d7c1", whiteText: false }
 ];
 
-function toCarouselItems(items: PortfolioItem[], group: FigureItem["group"], themeOffset = 0): FigureItem[] {
+function getPortfolioGroup(item: PortfolioItem): FigureItem["group"] {
+  if (item.type === "game") {
+    return "Interactive Games";
+  }
+
+  if (["dev-2fast", "dev-agentportal", "dev-pp-plastic", "dev-event-pal", "dev-qr-order-kds"].includes(item.id)) {
+    return "Business Platforms";
+  }
+  if (["dev-vps-deck", "dev-heartbeat-agent", "dev-phonedesk"].includes(item.id)) {
+    return "Infrastructure & Automation";
+  }
+  if (["dev-tailgate", "dev-watermark-remover"].includes(item.id)) {
+    return "AI & Computer Vision";
+  }
+  if (["dev-nric", "dev-cardbiz", "dev-nfc-reader"].includes(item.id)) {
+    return "Hardware Integrations";
+  }
+  if (["dev-pentest-bot", "dev-debugshot", "dev-pdf-pro"].includes(item.id)) {
+    return "Security & Developer Tools";
+  }
+
+  return "Creative Technology";
+}
+
+function toCarouselItems(items: PortfolioItem[], themeOffset = 0): FigureItem[] {
   return items.map((item, index) => {
     const theme = CAROUSEL_THEMES[(index + themeOffset) % CAROUSEL_THEMES.length];
     return {
       id: item.id,
-      group,
+      group: getPortfolioGroup(item),
       href: `/portfolio/${item.id}`,
       externalHref: item.href,
+      visibility: item.visibility ?? "public",
       color: theme.color,
       whiteText: theme.whiteText,
       thumbSrc: item.imageSrc,
@@ -104,15 +129,15 @@ export function SiteShell({ page = "home", section, collection = "figures" }: Si
   const activeSlide = site.heroSlides[uiState.activeHeroIndex] ?? site.heroSlides[0];
   const carouselItems = useMemo(() => {
     if (collection === "games") {
-      return toCarouselItems(site.games, "Interactive Games");
+      return toCarouselItems(site.games);
     }
     if (collection === "work") {
-      return toCarouselItems(site.devs, "Development");
+      return toCarouselItems(site.devs);
     }
     if (collection === "all") {
       return [
-        ...toCarouselItems(site.devs, "Development"),
-        ...toCarouselItems(site.games, "Interactive Games", site.devs.length)
+        ...toCarouselItems(site.devs),
+        ...toCarouselItems(site.games, site.devs.length)
       ];
     }
     return site.figures;
@@ -506,7 +531,6 @@ export function SiteShell({ page = "home", section, collection = "figures" }: Si
         isDoorOpen={uiState.isDoorOpen}
         activeSlide={activeSlide}
         onNavigate={navigate}
-        onClose={closeNav}
         onToggleDoor={toggleDoor}
       />
 

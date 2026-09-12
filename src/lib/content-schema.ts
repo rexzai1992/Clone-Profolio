@@ -123,6 +123,7 @@ function validateFigure(value: unknown, path: string, errors: string[]): FigureI
     group: readString(record.group, `${path}.group`, errors) as FigureItem["group"],
     href: readString(record.href, `${path}.href`, errors),
     externalHref: readString(record.externalHref, `${path}.externalHref`, errors),
+    visibility: (readString(record.visibility, `${path}.visibility`, errors, false) || "public") as FigureItem["visibility"],
     color: readString(record.color, `${path}.color`, errors),
     whiteText: readBoolean(record.whiteText, `${path}.whiteText`, errors),
     thumbSrc: readString(record.thumbSrc, `${path}.thumbSrc`, errors),
@@ -142,6 +143,7 @@ function validatePortfolioItem(value: unknown, path: string, errors: string[]): 
   return {
     id: readString(record.id, `${path}.id`, errors),
     type: readString(record.type, `${path}.type`, errors) as PortfolioItem["type"],
+    visibility: (readString(record.visibility, `${path}.visibility`, errors, false) || "public") as PortfolioItem["visibility"],
     title: readString(record.title, `${path}.title`, errors),
     summary: readString(record.summary, `${path}.summary`, errors),
     stack: readStringArray(record.stack, `${path}.stack`, errors),

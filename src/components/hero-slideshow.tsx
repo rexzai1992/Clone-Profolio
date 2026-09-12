@@ -18,20 +18,33 @@ interface HeroSlideshowProps {
 }
 
 // Art direction like mimeyoi: portrait SP image below 768px, landscape KV above.
-function HeroMedia({ slide, priority }: { slide: HeroSlide; priority: boolean }) {
+function HeroMedia({
+  slide,
+  priority,
+  onNavigate
+}: {
+  slide: HeroSlide;
+  priority: boolean;
+  onNavigate: (href: string) => void;
+}) {
   const shared = { alt: slide.imageAlt, fill: true, sizes: "100vw", priority };
   const { props: desktop } = getImageProps({ ...shared, src: slide.imageSrc });
   const mobileSrc = slide.imageMobileSrc;
   const mobile = mobileSrc ? getImageProps({ ...shared, src: mobileSrc }).props : null;
 
   return (
-    <div className="hero-slideshow__media">
+    <button
+      className="hero-slideshow__media"
+      type="button"
+      aria-label={`${slide.cta}: ${slide.title}`}
+      onClick={() => onNavigate(slide.ctaHref)}
+    >
       <picture>
         {mobile ? <source media="(max-width: 768px)" srcSet={mobile.srcSet} /> : null}
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <img {...desktop} />
       </picture>
-    </div>
+    </button>
   );
 }
 
@@ -204,7 +217,7 @@ export function HeroSlideshow({
             style={{ "--slide-bg": slide.theme.bgA } as CSSProperties}
             aria-hidden={!isActive}
           >
-            <HeroMedia slide={slide} priority={index === 0} />
+            <HeroMedia slide={slide} priority={index === 0} onNavigate={onNavigate} />
 
             <div className="hero-slideshow__text">
               <p className="hero-slideshow__status">

@@ -11,7 +11,6 @@ interface NavigationOverlayProps {
   isDoorOpen: boolean;
   activeSlide: HeroSlide;
   onNavigate: (href: string) => void;
-  onClose: () => void;
   onToggleDoor: () => void;
 }
 
@@ -22,7 +21,6 @@ export function NavigationOverlay({
   isDoorOpen,
   activeSlide,
   onNavigate,
-  onClose,
   onToggleDoor
 }: NavigationOverlayProps) {
   return (
@@ -41,16 +39,6 @@ export function NavigationOverlay({
           } as CSSProperties
         }
       >
-        <button
-          className="nav-overlay__close"
-          type="button"
-          aria-label="Close navigation"
-          tabIndex={isNavOpen ? 0 : -1}
-          onClick={onClose}
-        >
-          <span />
-          <span />
-        </button>
         <div className="nav-overlay__col nav-overlay__col--left">
           <p className="nav-overlay__caption">{brandName}</p>
           <ul>

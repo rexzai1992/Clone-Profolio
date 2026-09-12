@@ -27,6 +27,7 @@ export interface HeroSlide {
 export interface PortfolioItem {
   id: string;
   type: "game" | "dev";
+  visibility?: "public" | "private";
   title: string;
   summary: string;
   stack: string[];
@@ -38,9 +39,19 @@ export interface PortfolioItem {
 
 export interface FigureItem {
   id: string;
-  group: "Featured Work" | "Selected Systems" | "Development" | "Interactive Games";
+  group:
+    | "Featured Work"
+    | "Selected Systems"
+    | "Business Platforms"
+    | "Infrastructure & Automation"
+    | "AI & Computer Vision"
+    | "Hardware Integrations"
+    | "Security & Developer Tools"
+    | "Creative Technology"
+    | "Interactive Games";
   href: string;
   externalHref: string;
+  visibility?: "public" | "private";
   color: string;
   whiteText: boolean;
   thumbSrc: string;
@@ -82,9 +93,9 @@ export interface SiteConfig {
 const HERO_IMAGE = "/images/kaynx1-hero-anime.png";
 const GAMES_IMAGE = "/images/kaynx1-games.png";
 const SERVICES_IMAGE = "/images/kaynx1-services.png";
-const HERO_ANIME_IMAGE = HERO_IMAGE;
-const GAMES_HERO_ANIME_IMAGE = "/images/kaynx1-camera-hero-anime-v2.png";
-const SERVICES_HERO_ANIME_IMAGE = "/images/kaynx1-hardware-hero-anime.png";
+const PRODUCT_DEVELOPER_HERO = "/images/heroes/technical-product-developer-v5.webp";
+const INTERACTIVE_AI_HERO = "/images/heroes/interactive-ai-experience.png";
+const TECH_SUPPORT_HERO = "/images/heroes/software-hardware-support-v5.png";
 
 export const SITE_CONFIG: SiteConfig = {
   brandName: "KAYNX1",
@@ -106,9 +117,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "Designing, building, deploying and supporting real products",
       cta: "View selected work",
       ctaHref: "/dev",
-      imageSrc: HERO_ANIME_IMAGE,
-      imageMobileSrc: HERO_ANIME_IMAGE,
-      imageAlt: "Anime illustration of the Kaynx1 technical creator with a laptop, camera and projector",
+      imageSrc: PRODUCT_DEVELOPER_HERO,
+      imageMobileSrc: PRODUCT_DEVELOPER_HERO,
+      imageAlt: "Technical product developer working in a professional software and hardware studio",
       theme: { bgA: "#07090d", bgB: "#182338", accent: "#f4f7ff" }
     },
     {
@@ -120,9 +131,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "Building and documenting interactive systems for real spaces",
       cta: "Explore the games",
       ctaHref: "/dev",
-      imageSrc: GAMES_HERO_ANIME_IMAGE,
-      imageMobileSrc: GAMES_HERO_ANIME_IMAGE,
-      imageAlt: "Anime illustration of the Kaynx1 creator using a professional mirrorless camera",
+      imageSrc: INTERACTIVE_AI_HERO,
+      imageMobileSrc: INTERACTIVE_AI_HERO,
+      imageAlt: "Visitor interacting with a camera-powered AI projection experience",
       theme: { bgA: "#0d121a", bgB: "#24344f", accent: "#eef4ff" }
     },
     {
@@ -134,9 +145,9 @@ export const SITE_CONFIG: SiteConfig = {
       detailB: "From component-level fixes to production-ready systems",
       cta: "View services",
       ctaHref: "https://izzul.xyz/",
-      imageSrc: SERVICES_HERO_ANIME_IMAGE,
-      imageMobileSrc: SERVICES_HERO_ANIME_IMAGE,
-      imageAlt: "Anime illustration of the Kaynx1 creator repairing an open desktop computer",
+      imageSrc: TECH_SUPPORT_HERO,
+      imageMobileSrc: TECH_SUPPORT_HERO,
+      imageAlt: "Technician diagnosing an integrated computer and electronic control system at a hardware workbench",
       theme: { bgA: "#080a10", bgB: "#1a2340", accent: "#ffffff" }
     }
   ],
@@ -148,8 +159,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://aigenius.pages.dev/",
       color: "#17263f",
       whiteText: true,
-      thumbSrc: "/images/games/aether-mirror.jpg",
-      imageSrc: GAMES_IMAGE,
+      thumbSrc: "/images/figures/ai-genius-cover.png",
+      imageSrc: "/images/figures/ai-genius-cover.png",
       series: "INTERACTIVE AI",
       name: "AI Genius",
       caption: "Ten live vision, motion and music experiences"
@@ -161,8 +172,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://izzul.xyz/",
       color: "#19345c",
       whiteText: true,
-      thumbSrc: SERVICES_IMAGE,
-      imageSrc: SERVICES_IMAGE,
+      thumbSrc: "/images/figures/custom-applications-cover.png",
+      imageSrc: "/images/figures/custom-applications-cover.png",
       series: "PRODUCT DEVELOPMENT",
       name: "Custom Applications",
       caption: "Operational software, automation and integrations"
@@ -174,8 +185,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://github.com/rexzai1992/Vps-Deck-Main",
       color: "#101820",
       whiteText: true,
-      thumbSrc: HERO_IMAGE,
-      imageSrc: HERO_IMAGE,
+      thumbSrc: "/images/figures/vps-deck-cover.png",
+      imageSrc: "/images/figures/vps-deck-cover.png",
       series: "INFRASTRUCTURE",
       name: "VPS Deck",
       caption: "Server operations made as easy as a click"
@@ -187,8 +198,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://github.com/rexzai1992/Tailgate-CCTV",
       color: "#223047",
       whiteText: true,
-      thumbSrc: "/images/games/face-analysis.jpg",
-      imageSrc: "/images/games/face-analysis.jpg",
+      thumbSrc: "/images/figures/tailgate-cctv-cover.png",
+      imageSrc: "/images/figures/tailgate-cctv-cover.png",
       series: "COMPUTER VISION",
       name: "Tailgate CCTV",
       caption: "Vision-assisted entry and safety monitoring"
@@ -203,7 +214,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Computer Vision", "Realtime", "Web Games"],
       cta: "Open live showcase",
       href: "https://aigenius.pages.dev/",
-      imageSrc: GAMES_IMAGE,
+      imageSrc: "/images/projects/ai-genius-featured-v2.png",
       imageAlt: "AI Genius live interactive demo showcase"
     },
     {
@@ -214,21 +225,21 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Next.js", "APIs", "Cloudflare", "Automation"],
       cta: "View services",
       href: "https://izzul.xyz/",
-      imageSrc: SERVICES_IMAGE,
+      imageSrc: "/images/projects/custom-app-development-v2.png",
       imageAlt: "Kaynx1 custom application development service"
     }
   ],
   games: [
-    ["body-shape", "Body Shape Challenge", "Interactive body-tracking movement challenge.", "Pose Tracking", "https://body-shape-challenge.pages.dev", "body-shape-challenge"],
-    ["hand-particle", "Hand Particle", "Hand-controlled particle interaction demo.", "Hand Tracking", "https://hand-partical.pages.dev", "hand-partical"],
-    ["aether-mirror", "Aether Mirror", "Futuristic mirror-style realtime AI visual experience.", "AI Mirror", "https://mecha-mirror.pages.dev/", "aether-mirror"],
-    ["face-analysis", "Face Analysis", "Realtime facial detection and visual intelligence demo.", "Face AI", "https://face-analysis.pages.dev", "face-analysis"],
-    ["rhythm-arena", "Rhythm Arena", "Motion and timing-based rhythm interaction experience.", "Rhythm Game", "https://rhythem-area.pages.dev", "rhythem-arena"],
-    ["fruit-ninja", "Fruit Ninja", "Fast motion-based slicing game experience.", "Motion Game", "https://fruit-ninja-3fe.pages.dev", "fruit-ninja"],
-    ["air-harp", "Air Harp", "A virtual harp controlled through hand movement.", "Music Interaction", "https://musical-air-harp.pages.dev", "air-harp"],
-    ["ar-goalkeeper", "AR Goal Keeper", "An augmented-reality goalkeeping challenge.", "AR Experience", "https://ar-goal-keeper.pages.dev/", "ar-goal-keeper"],
-    ["archery", "3D Archery", "Tournament-style 3D archery aiming and pull challenge.", "Sports Game", "https://3darchery.pages.dev/", "3d-archery"],
-    ["bowling", "3D Bowling", "A 3D bowling challenge with smooth aim-and-roll play.", "Sports Game", "https://3d-bowling-2qz.pages.dev", "3d-bowling"]
+    ["body-shape", "Body Shape Challenge", "Interactive body-tracking movement challenge.", "Pose Tracking", "https://body-shape-challenge.pages.dev", "body-shape-challenge-cover-v2.webp"],
+    ["hand-particle", "Hand Particle", "Hand-controlled particle interaction demo.", "Hand Tracking", "https://hand-partical.pages.dev", "hand-particle-cover-v2.webp"],
+    ["aether-mirror", "Aether Mirror", "Futuristic mirror-style realtime AI visual experience.", "AI Mirror", "https://mecha-mirror.pages.dev/", "aether-mirror-cover-v2.webp"],
+    ["face-analysis", "Face Analysis", "Realtime facial detection and visual intelligence demo.", "Face AI", "https://face-analysis.pages.dev", "face-analysis-cover-v2.webp"],
+    ["rhythm-arena", "Rhythm Arena", "Motion and timing-based rhythm interaction experience.", "Rhythm Game", "https://rhythem-area.pages.dev", "rhythm-arena-cover-v2.webp"],
+    ["fruit-ninja", "Fruit Ninja", "Fast motion-based slicing game experience.", "Motion Game", "https://fruit-ninja-3fe.pages.dev", "fruit-ninja-cover-v2.webp"],
+    ["air-harp", "Air Harp", "A virtual harp controlled through hand movement.", "Music Interaction", "https://musical-air-harp.pages.dev", "air-harp-cover-v2.webp"],
+    ["ar-goalkeeper", "AR Goal Keeper", "An augmented-reality goalkeeping challenge.", "AR Experience", "https://ar-goal-keeper.pages.dev/", "ar-goalkeeper-cover-v2.webp"],
+    ["archery", "3D Archery", "Tournament-style 3D archery aiming and pull challenge.", "Sports Game", "https://3darchery.pages.dev/", "3d-archery-cover-v2.webp"],
+    ["bowling", "3D Bowling", "A 3D bowling challenge with smooth aim-and-roll play.", "Sports Game", "https://3d-bowling-2qz.pages.dev", "3d-bowling-cover-v2.webp"]
   ].map(([id, title, summary, category, href, image]) => ({
     id,
     type: "game" as const,
@@ -237,7 +248,7 @@ export const SITE_CONFIG: SiteConfig = {
     stack: [category, "Realtime", "Interactive Web"],
     cta: "Play live",
     href,
-    imageSrc: `/images/games/${image}.jpg`,
+    imageSrc: `/images/projects/${image}`,
     imageAlt: `${title} interactive game preview`
   })),
   devs: [
@@ -249,7 +260,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["React", "TypeScript", "PostgreSQL", "Meta Cloud API"],
       cta: "View platform",
       href: "https://2fast.xyz/",
-      imageSrc: SERVICES_IMAGE,
+      imageSrc: "/images/projects/2fast-whatsapp.png",
       imageAlt: "2Fast WhatsApp automation platform"
     },
     {
@@ -260,19 +271,19 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Go", "Linux", "Monitoring", "Automation"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Vps-Deck-Main",
-      imageSrc: HERO_IMAGE,
+      imageSrc: "/images/projects/vps-deck.png",
       imageAlt: "VPS Deck infrastructure management project"
     },
     {
       id: "dev-photobooth",
       type: "dev",
-      title: "Event Photobooth Platform",
-      summary: "Automated capture, branded output, QR retrieval and print workflows designed for events and attractions.",
-      stack: ["TypeScript", "Camera", "QR Workflow", "Printing"],
+      title: "Deep Blue Photobooth",
+      summary: "An event photobooth platform with guided capture, layout selection, editing, gallery management, QR downloads, cloud media storage and Windows kiosk deployment.",
+      stack: ["React", "Cloudflare R2", "Supabase", "Electron Kiosk"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Photobooth-2fast.xyz",
-      imageSrc: "/images/games/aether-mirror.jpg",
-      imageAlt: "Interactive event photobooth experience"
+      imageSrc: "/images/projects/deep-blue-photobooth-v2.png",
+      imageAlt: "Deep Blue Photobooth capture kiosk, event gallery and print workflow"
     },
     {
       id: "dev-tailgate",
@@ -282,7 +293,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Python", "OpenCV", "Tracking", "CCTV"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Tailgate-CCTV",
-      imageSrc: "/images/games/face-analysis.jpg",
+      imageSrc: "/images/projects/tailgate-cctv.png",
       imageAlt: "Computer vision security monitoring project"
     },
     {
@@ -293,7 +304,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Python", "Smart Card", "Hardware", "Desktop"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/NRIC-Reader-ACS-Driver-",
-      imageSrc: HERO_IMAGE,
+      imageSrc: "/images/projects/nric-reader.png",
       imageAlt: "Smart card reader hardware integration"
     },
     {
@@ -304,8 +315,169 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["TypeScript", "Product UI", "APIs", "Operations"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Agentportal",
-      imageSrc: SERVICES_IMAGE,
+      imageSrc: "/images/projects/agent-portal.png",
       imageAlt: "Agent Portal product interface"
+    },
+    {
+      id: "dev-cardbiz",
+      type: "dev",
+      title: "CardBiz ECR Terminal",
+      summary: "An Android test application for integrating payment terminals over USB serial and wireless ECR protocols.",
+      stack: ["Kotlin", "Android", "USB Serial", "Payment ECR"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/cardbiz",
+      imageSrc: "/images/projects/cardbiz-ecr-cover.webp",
+      imageAlt: "CardBiz Android payment terminal integration repository"
+    },
+    {
+      id: "dev-watermark-remover",
+      type: "dev",
+      title: "Gemini Watermark Remover",
+      summary: "A focused TypeScript utility for cleaning AI-generated media and streamlining creative export workflows.",
+      stack: ["TypeScript", "Image Processing", "AI Tools", "Web App"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Gemini-Watermark-remover",
+      imageSrc: "/images/projects/pixelmend-cover-v2.png",
+      imageAlt: "Gemini Watermark Remover repository"
+    },
+    {
+      id: "dev-heartbeat-agent",
+      type: "dev",
+      title: "PC Heartbeat Agent",
+      summary: "A lightweight Python agent for monitoring the health and availability of multiple computers.",
+      stack: ["Python", "Monitoring", "Fleet Health", "Automation"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Pc-multi-heart-beat-agent",
+      imageSrc: "/images/projects/heartbeat-agent-cover.webp",
+      imageAlt: "PC multi heartbeat monitoring agent repository"
+    },
+    {
+      id: "dev-nfc-reader",
+      type: "dev",
+      title: "NFC Reader",
+      summary: "A Python hardware integration for reading and processing NFC card data in operational workflows.",
+      stack: ["Python", "NFC", "Hardware", "Integration"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Nfc-Reader",
+      imageSrc: "/images/projects/nfc-reader-cover.webp",
+      imageAlt: "NFC Reader hardware integration repository"
+    },
+    {
+      id: "dev-pp-plastic",
+      type: "dev",
+      title: "PP Plastic Platform",
+      summary: "A TypeScript business application built to digitise practical company and operational workflows.",
+      stack: ["TypeScript", "Business App", "Product UI", "Operations"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/PP-Plastic",
+      imageSrc: "/images/projects/pp-plastic-cover.webp",
+      imageAlt: "PP Plastic business platform repository"
+    },
+    {
+      id: "dev-ai-artventure",
+      type: "dev",
+      title: "AI Artventure",
+      summary: "An AI-powered creative experience that turns generative technology into an approachable interactive product.",
+      stack: ["TypeScript", "Generative AI", "Creative Tech", "Interactive"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/Ai-artventure",
+      imageSrc: "/images/projects/ai-artventure-cover.webp",
+      imageAlt: "AI Artventure creative technology repository"
+    },
+    {
+      id: "dev-phonedesk",
+      type: "dev",
+      visibility: "private",
+      title: "PhoneDesk",
+      summary: "A local-first desktop application for managing Android phones and iPhones from macOS and Windows.",
+      stack: ["Rust", "Desktop", "Device Management", "Local First"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/phonedesk-cover.webp",
+      imageAlt: "PhoneDesk desktop device management application"
+    },
+    {
+      id: "dev-pentest-bot",
+      type: "dev",
+      visibility: "private",
+      title: "Pentest Bot",
+      summary: "An authorization-gated scanner designed for safe, URL-first assessment of public web applications.",
+      stack: ["Python", "Security", "Automation", "Web Assessment"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/pentest-bot-cover.webp",
+      imageAlt: "Pentest Bot security assessment interface"
+    },
+    {
+      id: "dev-event-pal",
+      type: "dev",
+      visibility: "private",
+      title: "Event Pal",
+      summary: "An event operations platform for organizing experiences, coordinating workflows and keeping delivery on track.",
+      stack: ["TypeScript", "Event Operations", "Workflow", "Web Platform"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/event-pal-cover.webp",
+      imageAlt: "Event Pal operations platform"
+    },
+    {
+      id: "dev-qr-order-kds",
+      type: "dev",
+      visibility: "private",
+      title: "QROrder Pro KDS",
+      summary: "A connected QR ordering platform with point-of-sale and kitchen display workflows for food operations.",
+      stack: ["TypeScript", "QR Ordering", "POS", "Kitchen Display"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/qr-order-kds-cover.webp",
+      imageAlt: "QR ordering, POS and kitchen display platform"
+    },
+    {
+      id: "dev-debugshot",
+      type: "dev",
+      visibility: "private",
+      title: "DebugShot",
+      summary: "A Chrome extension that captures structured page-debugging reports for faster technical investigation.",
+      stack: ["TypeScript", "Chrome Extension", "Debugging", "Developer Tools"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/debugshot-cover.webp",
+      imageAlt: "DebugShot browser debugging extension"
+    },
+    {
+      id: "dev-pdf-pro",
+      type: "dev",
+      visibility: "private",
+      title: "PDF Pro",
+      summary: "A focused document utility for practical PDF processing and streamlined file workflows.",
+      stack: ["TypeScript", "PDF", "Documents", "Productivity"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/pdf-pro-cover.webp",
+      imageAlt: "PDF Pro document processing application"
+    },
+    {
+      id: "dev-ai-photo-generator",
+      type: "dev",
+      title: "AI Photo Generator",
+      summary: "A locally controlled Stable Diffusion and ComfyUI image-generation platform with uploads, style workflows, job queues, staff controls and public showcase galleries.",
+      stack: ["Python", "Stable Diffusion", "ComfyUI", "Realtime Queue"],
+      cta: "View on GitHub",
+      href: "https://github.com/rexzai1992/AUTOMATIC-1111-With-Controller",
+      imageSrc: "/images/projects/ai-photo-generator-showcase-v2.png",
+      imageAlt: "AI Photo Generator uploader, generation queue and showcase gallery"
+    },
+    {
+      id: "dev-muet-pro",
+      type: "dev",
+      visibility: "private",
+      title: "MUET Pro",
+      summary: "An education platform for generating and organizing MUET practice questions and learning material.",
+      stack: ["TypeScript", "Education", "Question Generation", "Web App"],
+      cta: "Request a walkthrough",
+      href: "/contact",
+      imageSrc: "/images/projects/muet-pro-cover.webp",
+      imageAlt: "MUET Pro education and question-generation platform"
     }
   ],
   sections: {
@@ -329,8 +501,8 @@ export const SITE_CONFIG: SiteConfig = {
       kicker: "Resume",
       heading: "Izzul Fitree — Technical Product Developer",
       lead: "I design, build, deploy and support software platforms and physical technology installations, combining engineering depth with practical product and business instincts.",
-      imageSrc: HERO_ANIME_IMAGE,
-      imageAlt: "Anime illustration of Izzul Fitree as the Kaynx1 technical creator",
+      imageSrc: PRODUCT_DEVELOPER_HERO,
+      imageAlt: "Technical product developer working in a professional software and hardware studio",
       lines: [
         "## Experience",
         "### Product Developer / Technical Support — Crave Asia Sdn Bhd",
@@ -360,7 +532,7 @@ export const SITE_CONFIG: SiteConfig = {
         "LINK: Explore services | https://izzul.xyz/",
         "LINK: GitHub | https://github.com/rexzai1992",
         "LINK: AI Genius games | https://aigenius.pages.dev/",
-        "Malaysia · +60 11-1117 1350"
+        "Malaysia"
       ]
     }
   }
