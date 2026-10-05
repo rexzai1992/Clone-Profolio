@@ -9,7 +9,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Kaynx1 — Izzul Fitree",
   description:
-    "Technical product development, AI automation, computer vision, interactive games and business systems by Izzul Fitree."
+    "Technical product development, AI automation, computer vision, interactive games and business systems by Izzul Fitree.",
+  // Google AdSense ownership check for kaynx1.com. Shows no ads here — ads run
+  // only on public.kaynx1.com's timetable pages.
+  other: {
+    "google-adsense-account": "ca-pub-4843649883093955"
+  }
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
