@@ -158,7 +158,11 @@ export function NotFoundEffect({ src }: NotFoundEffectProps) {
     };
 
     const image = new Image();
-    image.crossOrigin = "anonymous";
+    // Same-origin images need no CORS mode; requesting one anyway downloads the image a second
+    // time alongside the page's <img>.
+    if (new URL(src, window.location.href).origin !== window.location.origin) {
+      image.crossOrigin = "anonymous";
+    }
     image.src = src;
 
     image.onload = () => {

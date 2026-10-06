@@ -9,7 +9,8 @@ function getNextPath() {
   }
 
   const next = new URLSearchParams(window.location.search).get("next");
-  return next?.startsWith("/") ? next : "/admin/";
+  // "//evil.tld" and "/\evil.tld" also start with "/" but leave the site.
+  return next && /^\/(?![/\\])/.test(next) ? next : "/admin/";
 }
 
 export function AdminLogin() {

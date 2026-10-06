@@ -90,12 +90,12 @@ export interface SiteConfig {
   };
 }
 
-const HERO_IMAGE = "/images/kaynx1-hero-anime.png";
-const GAMES_IMAGE = "/images/kaynx1-games.png";
-const SERVICES_IMAGE = "/images/kaynx1-services.png";
+const HERO_IMAGE = "/images/kaynx1-hero-anime.webp";
+const GAMES_IMAGE = "/images/kaynx1-games.webp";
+const SERVICES_IMAGE = "/images/kaynx1-services.webp";
 const PRODUCT_DEVELOPER_HERO = "/images/heroes/technical-product-developer-v5.webp";
-const INTERACTIVE_AI_HERO = "/images/heroes/interactive-ai-experience.png";
-const TECH_SUPPORT_HERO = "/images/heroes/software-hardware-support-v5.png";
+const INTERACTIVE_AI_HERO = "/images/heroes/interactive-ai-experience.webp";
+const TECH_SUPPORT_HERO = "/images/heroes/software-hardware-support-v5.webp";
 
 export const SITE_CONFIG: SiteConfig = {
   brandName: "KAYNX1",
@@ -159,8 +159,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://aigenius.pages.dev/",
       color: "#17263f",
       whiteText: true,
-      thumbSrc: "/images/figures/ai-genius-cover.png",
-      imageSrc: "/images/figures/ai-genius-cover.png",
+      thumbSrc: "/images/figures/ai-genius-cover.webp",
+      imageSrc: "/images/figures/ai-genius-cover.webp",
       series: "INTERACTIVE AI",
       name: "AI Genius",
       caption: "Ten live vision, motion and music experiences"
@@ -172,8 +172,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://izzul.xyz/",
       color: "#19345c",
       whiteText: true,
-      thumbSrc: "/images/figures/custom-applications-cover.png",
-      imageSrc: "/images/figures/custom-applications-cover.png",
+      thumbSrc: "/images/figures/custom-applications-cover.webp",
+      imageSrc: "/images/figures/custom-applications-cover.webp",
       series: "PRODUCT DEVELOPMENT",
       name: "Custom Applications",
       caption: "Operational software, automation and integrations"
@@ -185,8 +185,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://github.com/rexzai1992/Vps-Deck-Main",
       color: "#101820",
       whiteText: true,
-      thumbSrc: "/images/figures/vps-deck-cover.png",
-      imageSrc: "/images/figures/vps-deck-cover.png",
+      thumbSrc: "/images/figures/vps-deck-cover.webp",
+      imageSrc: "/images/figures/vps-deck-cover.webp",
       series: "INFRASTRUCTURE",
       name: "VPS Deck",
       caption: "Server operations made as easy as a click"
@@ -198,8 +198,8 @@ export const SITE_CONFIG: SiteConfig = {
       externalHref: "https://github.com/rexzai1992/Tailgate-CCTV",
       color: "#223047",
       whiteText: true,
-      thumbSrc: "/images/figures/tailgate-cctv-cover.png",
-      imageSrc: "/images/figures/tailgate-cctv-cover.png",
+      thumbSrc: "/images/figures/tailgate-cctv-cover.webp",
+      imageSrc: "/images/figures/tailgate-cctv-cover.webp",
       series: "COMPUTER VISION",
       name: "Tailgate CCTV",
       caption: "Vision-assisted entry and safety monitoring"
@@ -214,7 +214,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Computer Vision", "Realtime", "Web Games"],
       cta: "Open live showcase",
       href: "https://aigenius.pages.dev/",
-      imageSrc: "/images/projects/ai-genius-featured-v2.png",
+      imageSrc: "/images/projects/ai-genius-featured-v2.webp",
       imageAlt: "AI Genius live interactive demo showcase"
     },
     {
@@ -225,7 +225,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Next.js", "APIs", "Cloudflare", "Automation"],
       cta: "View services",
       href: "https://izzul.xyz/",
-      imageSrc: "/images/projects/custom-app-development-v2.png",
+      imageSrc: "/images/projects/custom-app-development-v2.webp",
       imageAlt: "Kaynx1 custom application development service"
     }
   ],
@@ -260,7 +260,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["TypeScript", "GTFS Realtime", "Journey Planning", "Capacitor"],
       cta: "Open live project",
       href: "https://public.kaynx1.com/",
-      imageSrc: "/images/projects/public-transport-live-v2.png",
+      imageSrc: "/images/projects/public-transport-live-v2.webp",
       imageAlt: "Public Transport Live map showing Kuala Lumpur rail routes and journey-planning coverage"
     },
     {
@@ -271,7 +271,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["React", "TypeScript", "PostgreSQL", "Meta Cloud API"],
       cta: "View platform",
       href: "https://2fast.xyz/",
-      imageSrc: "/images/projects/2fast-whatsapp.png",
+      imageSrc: "/images/projects/2fast-whatsapp.webp",
       imageAlt: "2Fast WhatsApp automation platform"
     },
     {
@@ -282,7 +282,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Go", "Linux", "Monitoring", "Automation"],
       cta: "Open live project",
       href: "https://vps.izzul.xyz/",
-      imageSrc: "/images/projects/vps-deck.png",
+      imageSrc: "/images/projects/vps-deck.webp",
       imageAlt: "VPS Deck infrastructure management project"
     },
     {
@@ -293,7 +293,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["React", "Cloudflare R2", "Supabase", "Electron Kiosk"],
       cta: "Open live project",
       href: "https://photobooth.izzul.xyz/",
-      imageSrc: "/images/projects/deep-blue-photobooth-v2.png",
+      imageSrc: "/images/projects/deep-blue-photobooth-v2.webp",
       imageAlt: "Deep Blue Photobooth capture kiosk, event gallery and print workflow"
     },
     {
@@ -304,7 +304,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Python", "OpenCV", "Tracking", "CCTV"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Tailgate-CCTV",
-      imageSrc: "/images/projects/tailgate-cctv.png",
+      imageSrc: "/images/projects/tailgate-cctv.webp",
       imageAlt: "Computer vision security monitoring project"
     },
     {
@@ -315,7 +315,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Python", "Smart Card", "Hardware", "Desktop"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/NRIC-Reader-ACS-Driver-",
-      imageSrc: "/images/projects/nric-reader.png",
+      imageSrc: "/images/projects/nric-reader.webp",
       imageAlt: "Smart card reader hardware integration"
     },
     {
@@ -326,7 +326,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["TypeScript", "Product UI", "APIs", "Operations"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Agentportal",
-      imageSrc: "/images/projects/agent-portal.png",
+      imageSrc: "/images/projects/agent-portal.webp",
       imageAlt: "Agent Portal product interface"
     },
     {
@@ -348,7 +348,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["TypeScript", "Image Processing", "AI Tools", "Web App"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/Gemini-Watermark-remover",
-      imageSrc: "/images/projects/pixelmend-cover-v2.png",
+      imageSrc: "/images/projects/pixelmend-cover-v2.webp",
       imageAlt: "Gemini Watermark Remover repository"
     },
     {
@@ -475,7 +475,7 @@ export const SITE_CONFIG: SiteConfig = {
       stack: ["Python", "Stable Diffusion", "ComfyUI", "Realtime Queue"],
       cta: "View on GitHub",
       href: "https://github.com/rexzai1992/AUTOMATIC-1111-With-Controller",
-      imageSrc: "/images/projects/ai-photo-generator-showcase-v2.png",
+      imageSrc: "/images/projects/ai-photo-generator-showcase-v2.webp",
       imageAlt: "AI Photo Generator uploader, generation queue and showcase gallery"
     },
     {

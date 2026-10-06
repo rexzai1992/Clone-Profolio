@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NotFoundEffect } from "@/components/notfound-effect";
-const NOTFOUND_IMAGE = "/images/kaynx1-hero-anime.png";
+const NOTFOUND_IMAGE = "/images/kaynx1-hero-anime.webp";
 
 export function ErrorPage() {
   return (

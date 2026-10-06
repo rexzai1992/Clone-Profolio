@@ -66,6 +66,8 @@ export function PortfolioDetailView({ item, nextItem, index, total }: PortfolioD
             href={item.href}
             target={/^https?:\/\//.test(item.href) ? "_blank" : undefined}
             rel={/^https?:\/\//.test(item.href) ? "noreferrer" : undefined}
+            // Internal CTAs (e.g. "Request a walkthrough" → /contact) were full reloads that replayed the intro.
+            onClick={item.href.startsWith("/") ? (event) => navigate(event, item.href) : undefined}
           >
             {item.cta} <span>↗</span>
           </a>

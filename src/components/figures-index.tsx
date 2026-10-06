@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import type { FigureItem } from "@/data/site-config";
 import { useMotion } from "@/context/motion-context";
 import { useSiteContent } from "@/context/site-content-context";
+import { SCROLL_REVEAL_THRESHOLDS, shouldScrollReveal } from "@/lib/scroll-reveal";
 
 type FigureMode = "grid" | "index";
 
@@ -43,8 +44,8 @@ const HOVER_LEAVE_GRACE_MS = 1200;
 const FIGURE_SWITCH_GRACE_MS = 120;
 const CARD_NAV_TRANSITION_MS = 450;
 const FIGURE_READY_TIMEOUT_MS = 1200;
-const FIGURE_READY_COUNT = 4;
-const FIGURE_EAGER_COUNT = 6;
+const FIGURE_READY_COUNT = 1;
+const FIGURE_EAGER_COUNT = 1;
 
 interface FiguresIndexProps {
   onNavigate?: (href: string) => void;
@@ -115,6 +116,7 @@ export function FiguresIndex({
   const targetOffsetRef = useRef(0);
   const revealReadyRef = useRef(false);
   const loadedFigureIdsRef = useRef<Record<string, true>>({});
+  const preloadedImageSrcsRef = useRef<Set<string>>(new Set());
   const initialFigureId = figures[0]?.id ?? "";
   const activeFigureIdRef = useRef(initialFigureId);
   const isHoveringFigureRef = useRef(false);
@@ -195,17 +197,25 @@ export function FiguresIndex({
     setActiveFigure(figures[0]?.id ?? "");
   }, [activeFigureId, figures, setActiveFigure]);
 
+  const preloadFigureImage = useCallback((src: string) => {
+    if (preloadedImageSrcsRef.current.has(src)) {
+      return;
+    }
+
+    preloadedImageSrcsRef.current.add(src);
+    const img = new window.Image();
+    img.decoding = "async";
+    img.src = src;
+  }, []);
+
   useEffect(() => {
     firstFigureIds.forEach((figureId) => {
       const figure = figures.find((item) => item.id === figureId);
-      if (!figure) {
-        return;
+      if (figure) {
+        preloadFigureImage(figure.imageSrc);
       }
-      const img = new window.Image();
-      img.decoding = "async";
-      img.src = figure.imageSrc;
     });
-  }, [figures, firstFigureIds]);
+  }, [figures, firstFigureIds, preloadFigureImage]);
 
   const getNormalizedWheelDelta = useCallback(
     (deltaX: number, deltaY: number, deltaMode: number) => {
@@ -301,11 +311,21 @@ export function FiguresIndex({
         return;
       }
 
+      // Hidden cards are clipped to nothing, so native lazy-loading would not start until they are
+      // revealed. Fetch on-screen cards and one card either side ahead of time instead.
+      const figure = figures[placement.index];
+      if (figure && placement.x >= width * -2 && placement.x <= windowWidth + width) {
+        preloadFigureImage(figure.imageSrc);
+      }
+
       // Keep a deterministic base left slot in CSS and move from that slot with transform.
       // This prevents temporary overlap at x=0 if JS transform updates are delayed.
       item.style.transform = `translate3d(${placement.x - width * placement.index}px, 0, 0)`;
-      item.classList.toggle("is-active", revealReadyRef.current && placement.isVisible);
-      item.classList.toggle("is-centered", revealReadyRef.current && closest?.index === placement.index);
+      // Until the intro reveal finishes it owns these classes; toggling them every frame would undo it.
+      if (revealReadyRef.current) {
+        item.classList.toggle("is-active", placement.isVisible);
+        item.classList.toggle("is-centered", closest?.index === placement.index);
+      }
 
       if (imageInner) {
         imageInner.style.transform = `translate3d(${placement.innerX}px, 0, 0)`;
@@ -317,7 +337,7 @@ export function FiguresIndex({
     if (revealReadyRef.current && centeredFigure && !isHoveringFigureRef.current) {
       setActiveFigure(centeredFigure.id);
     }
-  }, [figures, mode, setActiveFigure]);
+  }, [figures, mode, preloadFigureImage, setActiveFigure]);
 
   const moveRailBy = useCallback(
     (distance: number) => {
@@ -386,8 +406,8 @@ export function FiguresIndex({
           return null;
         }
 
-        const matrix = new DOMMatrixReadOnly(window.getComputedStyle(item).transform);
-        return { item, x: matrix.m41 };
+        // The transform only holds the offset from each item's CSS slot, so read the on-screen position.
+        return { item, x: item.getBoundingClientRect().left };
       })
       .filter((entry): entry is { item: HTMLDivElement; x: number } =>
         Boolean(entry && entry.x >= width * -1.1 && entry.x <= windowWidth * 1.1)
@@ -401,7 +421,8 @@ export function FiguresIndex({
       item.style.setProperty("--card-delay", `${delayMs}ms`);
       item.style.setProperty("--image-delay", `${delayMs + 100}ms`);
       item.style.setProperty("--title-delay", `${delayMs + 150}ms`);
-      timers.push(window.setTimeout(() => item.classList.add("is-active"), delayMs));
+      // The transitions already wait for these delays, so activate now rather than delaying twice.
+      item.classList.add("is-active");
     });
 
     const longestDelay = Math.max(...visibleItems.map((_, index) => 180 + Math.floor(index / 4) * 280 + (index % 4) * 70), 0);
@@ -583,14 +604,14 @@ export function FiguresIndex({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+          if (!shouldScrollReveal(entry)) {
             return;
           }
           entry.target.setAttribute("data-revealed", "true");
           observer.unobserve(entry.target);
         });
       },
-      { threshold: [0, 0.2, 0.6] }
+      { threshold: SCROLL_REVEAL_THRESHOLDS }
     );
 
     revealNodes.forEach((node) => observer.observe(node));
@@ -639,13 +660,12 @@ export function FiguresIndex({
   }, [mode]);
 
   useEffect(() => {
-    if (mode !== "grid" || uiState.isNavOpen) {
+    // Endless motion with no pause control fails reduced-motion users (WCAG 2.2.2).
+    if (mode !== "grid" || uiState.isNavOpen || isReducedMotion) {
       return;
     }
 
-    const autoDriftSpeed = isReducedMotion
-      ? tokens.figures.autoDriftPxPerSec * 0.72
-      : tokens.figures.autoDriftPxPerSec;
+    const autoDriftSpeed = tokens.figures.autoDriftPxPerSec;
 
     let raf = 0;
     let previousTime = performance.now();

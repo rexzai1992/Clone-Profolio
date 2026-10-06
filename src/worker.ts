@@ -39,7 +39,13 @@ function assetKeyFromPath(pathname: string): string | null {
     return null;
   }
 
-  const key = decodeURIComponent(pathname.slice(ASSET_PREFIX.length));
+  let key: string;
+  try {
+    key = decodeURIComponent(pathname.slice(ASSET_PREFIX.length));
+  } catch {
+    // Malformed percent-encoding (e.g. /assets/%FF) used to throw and 500 the worker.
+    return null;
+  }
   if (!key || key.includes("..")) {
     return null;
   }
@@ -51,12 +57,45 @@ function assetHeaders(object: R2ObjectBody): Headers {
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
+  headers.set("x-content-type-options", "nosniff");
 
   if (!headers.has("cache-control")) {
     headers.set("cache-control", IMMUTABLE_CACHE);
   }
+  // Only media renders inline; anything else in the bucket (HTML, SVG, XML) downloads
+  // instead of running script on this origin.
+  const contentType = (headers.get("content-type") ?? "").toLowerCase();
+  const isInlineMedia = /^(image\/(?!svg)|video\/|audio\/)/.test(contentType);
+  if (!isInlineMedia) {
+    headers.set("content-disposition", "attachment");
+  }
 
   return headers;
+}
+
+function isLocalHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+// Browsers always send Origin on cross-site POST/PUT/DELETE, so a mismatch means another site
+// is trying to act with the admin's cookie (SameSite=Strict does not cover sibling subdomains).
+function isCrossSiteWrite(request: Request, url: URL) {
+  if (request.method === "GET" || request.method === "HEAD") {
+    return false;
+  }
+
+  const origin = request.headers.get("origin");
+  return origin !== null && origin !== url.origin;
+}
+
+function withAdminPageHeaders(response: Response) {
+  const secured = new Response(response.body, response);
+  secured.headers.set("x-frame-options", "DENY");
+  secured.headers.set("content-security-policy", "frame-ancestors 'none'");
+  secured.headers.set("x-content-type-options", "nosniff");
+  secured.headers.set("referrer-policy", "same-origin");
+  secured.headers.set("x-robots-tag", "noindex, nofollow");
+  return secured;
 }
 
 function jsonResponse(value: unknown, init: ResponseInit = {}) {
@@ -244,7 +283,11 @@ async function handlePublicContent(request: Request, env: Env) {
 
   const { document, errors } = await readSavedContent(env);
   if (!document) {
-    return jsonResponse({ error: "No saved content.", errors }, { status: 404 });
+    if (errors.length) {
+      console.error("Saved content is invalid; serving built-in content.", errors);
+    }
+    // 204 rather than 404: every page asks for this, and a 404 logs a console error for every visitor.
+    return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
   }
 
   return jsonResponse(document);
@@ -258,8 +301,13 @@ async function handleAdminContent(request: Request, env: Env) {
 
   if (request.method === "GET") {
     const { document, errors } = await readSavedContent(env);
+    if (!document && errors.length) {
+      // Distinct from "nothing saved" so the dashboard warns instead of offering defaults
+      // that would overwrite the stored document on the next save.
+      return jsonResponse({ error: "Saved content is invalid.", errors }, { status: 422 });
+    }
     if (!document) {
-      return jsonResponse({ error: "No saved content.", errors }, { status: 404 });
+      return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
     }
     return jsonResponse(document);
   }
@@ -332,6 +380,12 @@ async function handleUpload(request: Request, env: Env) {
     return methodNotAllowed(["POST"]);
   }
 
+  // formData() buffers the whole body, so reject oversized uploads before reading them.
+  const declaredBytes = Number(request.headers.get("content-length") ?? 0);
+  if (declaredBytes > MAX_UPLOAD_BYTES + 64 * 1024) {
+    return jsonResponse({ error: "Image must be 8 MB or smaller." }, { status: 413 });
+  }
+
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) {
@@ -401,7 +455,12 @@ async function handleLogin(request: Request, env: Env) {
   );
 }
 
-function handleLogout() {
+function handleLogout(request: Request) {
+  // GET would let any cross-site link or image log the admin out.
+  if (request.method !== "POST") {
+    return methodNotAllowed(["POST"]);
+  }
+
   return jsonResponse(
     { ok: true },
     {
@@ -473,6 +532,17 @@ async function handleAsset(request: Request, env: Env, key: string) {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // The login form and session cookie must never travel over plain HTTP.
+    if (url.protocol === "http:" && !isLocalHost(url.hostname)) {
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
+
+    if (url.pathname.startsWith("/api/admin/") && isCrossSiteWrite(request, url)) {
+      return jsonResponse({ error: "Cross-site request blocked." }, { status: 403 });
+    }
+
     const key = assetKeyFromPath(url.pathname);
 
     if (url.pathname === "/api/content") {
@@ -482,7 +552,7 @@ export default {
       return handleLogin(request, env);
     }
     if (url.pathname === "/api/admin/logout") {
-      return handleLogout();
+      return handleLogout(request);
     }
     if (url.pathname === "/api/admin/session") {
       return handleSession(request, env);
@@ -510,6 +580,7 @@ export default {
       return handleAsset(request, env, key);
     }
 
-    return env.ASSETS.fetch(request);
+    const response = await env.ASSETS.fetch(request);
+    return url.pathname.startsWith("/admin") ? withAdminPageHeaders(response) : response;
   }
 } satisfies ExportedHandler<Env>;

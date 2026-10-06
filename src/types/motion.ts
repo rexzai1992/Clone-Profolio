@@ -78,9 +78,9 @@ export const MOTION_TOKENS: MotionTokens = {
     quickOut: "cubic-bezier(0.6, -0.28, 0.735, 0.045)"
   },
   durations: {
-    loaderDelayMs: 200,
-    loaderMotionMs: 1500,
-    loaderTotalMs: 3400,
+    loaderDelayMs: 80,
+    loaderMotionMs: 520,
+    loaderTotalMs: 900,
     navOpenMs: 800,
     navLayerStaggerMs: 200,
     heroSwitchMs: 1000,

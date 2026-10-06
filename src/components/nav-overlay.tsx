@@ -40,7 +40,11 @@ export function NavigationOverlay({
         }
       >
         <div className="nav-overlay__col nav-overlay__col--left">
-          <p className="nav-overlay__caption">{brandName}</p>
+          <div className="nav-overlay__mobile-meta" aria-hidden="true">
+            <span>IF</span>
+            <time dateTime="2026-09">Sep<br />©2026</time>
+          </div>
+          <p className="nav-overlay__caption"><span className="nav-overlay__caption-desktop">{brandName}</span><span className="nav-overlay__caption-mobile">Top</span></p>
           <ul>
             {navItems.map((item, index) => (
               <li key={item.id} style={{ "--i": index } as CSSProperties}>
@@ -57,6 +61,11 @@ export function NavigationOverlay({
               </li>
             ))}
           </ul>
+          <div className="nav-overlay__mobile-footer">
+            <a href="https://github.com/rexzai1992" target="_blank" rel="noreferrer" tabIndex={isNavOpen ? 0 : -1}>GitHub</a>
+            <a href="/about" tabIndex={isNavOpen ? 0 : -1} onClick={(event) => { event.preventDefault(); onNavigate("/about"); }}>Resume</a>
+            <a href="/contact" tabIndex={isNavOpen ? 0 : -1} onClick={(event) => { event.preventDefault(); onNavigate("/contact"); }}>Contact</a>
+          </div>
         </div>
 
         <div className="nav-overlay__col nav-overlay__col--right">

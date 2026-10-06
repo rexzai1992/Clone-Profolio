@@ -605,7 +605,11 @@ export function AdminDashboard() {
         }
 
         const response = await fetch("/api/admin/content", { cache: "no-store" });
-        if (response.status === 404) {
+        if (response.status === 422) {
+          const payload = (await response.json().catch(() => null)) as { errors?: string[] } | null;
+          throw new Error(`Saved content is invalid: ${payload?.errors?.[0] ?? "unknown error"}. Saving will replace it.`);
+        }
+        if (response.status === 204 || response.status === 404) {
           if (!cancelled) {
             setSite(cloneSite(SITE_CONFIG));
             setStatus("No saved content yet. Editing fallback content.");

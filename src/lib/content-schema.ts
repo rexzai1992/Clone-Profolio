@@ -50,6 +50,30 @@ function readNumber(value: unknown, path: string, errors: string[]): number {
   return 0;
 }
 
+const FIGURE_GROUPS = [
+  "Featured Work",
+  "Selected Systems",
+  "Business Platforms",
+  "Infrastructure & Automation",
+  "AI & Computer Vision",
+  "Hardware Integrations",
+  "Security & Developer Tools",
+  "Creative Technology",
+  "Interactive Games"
+] as const satisfies readonly FigureItem["group"][];
+const PORTFOLIO_TYPES = ["game", "dev"] as const satisfies readonly PortfolioItem["type"][];
+const VISIBILITIES = ["public", "private"] as const;
+
+// Unknown values used to pass and then silently drop the item (e.g. a figure in no group).
+function readEnum<T extends string>(value: unknown, allowed: readonly T[], path: string, errors: string[]): T {
+  if (typeof value === "string" && (allowed as readonly string[]).includes(value)) {
+    return value as T;
+  }
+
+  errors.push(`${path} must be one of: ${allowed.join(", ")}.`);
+  return allowed[0];
+}
+
 function readBoolean(value: unknown, path: string, errors: string[]): boolean {
   if (typeof value === "boolean") {
     return value;
@@ -120,10 +144,10 @@ function validateFigure(value: unknown, path: string, errors: string[]): FigureI
 
   return {
     id: readString(record.id, `${path}.id`, errors),
-    group: readString(record.group, `${path}.group`, errors) as FigureItem["group"],
+    group: readEnum(record.group, FIGURE_GROUPS, `${path}.group`, errors),
     href: readString(record.href, `${path}.href`, errors),
     externalHref: readString(record.externalHref, `${path}.externalHref`, errors),
-    visibility: (readString(record.visibility, `${path}.visibility`, errors, false) || "public") as FigureItem["visibility"],
+    visibility: readEnum(record.visibility || "public", VISIBILITIES, `${path}.visibility`, errors),
     color: readString(record.color, `${path}.color`, errors),
     whiteText: readBoolean(record.whiteText, `${path}.whiteText`, errors),
     thumbSrc: readString(record.thumbSrc, `${path}.thumbSrc`, errors),
@@ -142,8 +166,8 @@ function validatePortfolioItem(value: unknown, path: string, errors: string[]): 
 
   return {
     id: readString(record.id, `${path}.id`, errors),
-    type: readString(record.type, `${path}.type`, errors) as PortfolioItem["type"],
-    visibility: (readString(record.visibility, `${path}.visibility`, errors, false) || "public") as PortfolioItem["visibility"],
+    type: readEnum(record.type, PORTFOLIO_TYPES, `${path}.type`, errors),
+    visibility: readEnum(record.visibility || "public", VISIBILITIES, `${path}.visibility`, errors),
     title: readString(record.title, `${path}.title`, errors),
     summary: readString(record.summary, `${path}.summary`, errors),
     stack: readStringArray(record.stack, `${path}.stack`, errors),
@@ -248,12 +272,18 @@ export function validateSiteConfig(value: unknown): ValidationResult<SiteConfig>
     }
   };
 
-  if (site.heroSpeedSeconds <= 0) {
-    errors.push("site.heroSpeedSeconds must be greater than 0.");
+  // Tiny values round slideDurationMs to 0 and the hero flips slides every frame.
+  if (site.heroSpeedSeconds < 1) {
+    errors.push("site.heroSpeedSeconds must be at least 1.");
   }
   if (isLegacyContactSection(site.sections.contact)) {
     site.sections.contact = cloneSection(SITE_CONFIG.sections.contact);
   }
+  site.sections.contact.lines?.forEach((line, index) => {
+    if (line.startsWith("LINK: ") && !/^LINK: .+ \| \S+/.test(line)) {
+      errors.push(`site.sections.contact.lines.${index} must look like "LINK: Label | https://…".`);
+    }
+  });
   if (!site.navItems.length) {
     errors.push("site.navItems must include at least one item.");
   }

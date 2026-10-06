@@ -298,8 +298,8 @@ textarea {
 
 /* First-load sequence: the KAYNX1 word fills, then the page fades into view. */
 body[data-kx-loading="true"] .site-root {
-  --loadingDuration: 1.5s;
-  --loadingDelay: 1.8s;
+  --loadingDuration: 0.52s;
+  --loadingDelay: 0.32s;
   animation: kx-loading-reveal var(--loadingDuration) var(--loadingDelay) both;
 }
 
@@ -555,6 +555,12 @@ body[data-kaynx-color="black"] .site-root[data-page="figures"] .auto-header {
   transform: translate3d(0, 0, 0);
 }
 
+/* Index view is a scrolling list; the fixed clock would sit on top of the cards. */
+html.is-kaynx-noclock .live-clock {
+  opacity: 0;
+  transform: translate3d(0, -8px, 0);
+}
+
 .site-root[data-page="home"] .live-clock {
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.24);
@@ -651,6 +657,12 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--color-subtle);
+}
+
+.nav-overlay__caption-mobile,
+.nav-overlay__mobile-meta,
+.nav-overlay__mobile-footer {
+  display: none;
 }
 
 .nav-overlay__col--left ul {
@@ -774,7 +786,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   inset: 0;
   z-index: 1690;
   background: #fff;
-  animation: kx-veil-out 0.01s 1.8s both;
+  animation: kx-veil-out 0.01s 0.32s both;
 }
 
 .first-load-intro {
@@ -800,7 +812,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   line-height: 1;
   white-space: nowrap;
   transform: translate(-50%, -50%);
-  animation: kx-cover-logo 1.8s 0.2s both;
+  animation: kx-cover-logo 0.82s 0.04s both;
 }
 
 .first-load-intro__logo span {
@@ -816,7 +828,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   color: #111;
   -webkit-text-stroke: 0;
   clip-path: inset(0 100% 0 0);
-  animation: kx-logo-fill 1.55s 0.25s var(--ease-reveal) both;
+  animation: kx-logo-fill 0.68s 0.06s var(--ease-reveal) both;
 }
 
 @keyframes kx-veil-out {
@@ -1249,6 +1261,11 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 .section--news,
 .section--contact {
   padding-bottom: clamp(4rem, 8vw, 7rem);
+}
+
+/* News opens the page, so on phones the 9vw top padding left its kicker under the fixed header. */
+.section--news {
+  padding-top: max(clamp(3.5rem, 9vw, 8.5rem), 6rem);
 }
 
 .section__header {
@@ -2813,7 +2830,8 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 
 .figures-index__heading {
   position: absolute;
-  top: min(10.15625vw, 18.05556vh);
+  /* Cards start at 21.67vh; 13vh keeps the ~6.5vh-tall heading clear of them on wide screens. */
+  top: min(10.15625vw, 13vh);
   left: 2.5vw;
   z-index: 5;
   margin: 0;
@@ -2853,7 +2871,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 
 .figures-index__nav {
   position: absolute;
-  top: min(10.15625vw, 18.05556vh);
+  top: min(10.15625vw, 13vh);
   right: 2.5vw;
   z-index: 4;
   display: flex;
@@ -3046,7 +3064,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   inset: 0;
   background:
     linear-gradient(105deg, rgba(255, 255, 255, 0) 24%, rgba(255, 255, 255, 0.38) 44%, rgba(255, 255, 255, 0) 62%),
-    #e9e5dc;
+    color-mix(in oklab, var(--figure-card-color, #d8dde2), white 52%);
   background-size: 210% 100%, 100% 100%;
   animation: kaynx-figure-skeleton 1.15s linear infinite;
   pointer-events: none;
@@ -3270,6 +3288,7 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 
 .figures-index__index-link {
   display: grid;
+  align-content: start;
   gap: 1.15rem;
   min-width: 0;
   color: #000;
@@ -3617,6 +3636,134 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 }
 
 @media (max-width: 768px) {
+  .nav-overlay {
+    background: #dfecef;
+    backdrop-filter: none;
+  }
+
+  .nav-overlay__panel {
+    inset: 11px;
+    display: block;
+    overflow: hidden;
+    border-color: #c8d2d4;
+  }
+
+  .nav-overlay__col--left {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 12.5rem 2.5rem 2.25rem;
+  }
+
+  .nav-overlay__mobile-meta {
+    position: absolute;
+    top: 4.55rem;
+    right: 2.5rem;
+    display: block;
+    width: 7rem;
+    font-size: 0.95rem;
+    line-height: 1;
+    text-align: right;
+  }
+
+  .nav-overlay__mobile-meta > span {
+    position: absolute;
+    top: 0;
+    right: 4.8rem;
+  }
+
+  .nav-overlay__mobile-meta time {
+    display: block;
+    margin-top: 4.4rem;
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-style: normal;
+    line-height: 0.92;
+  }
+
+  .nav-overlay__caption-desktop {
+    display: none;
+  }
+
+  .nav-overlay__caption-mobile {
+    display: inline;
+  }
+
+  .nav-overlay__caption {
+    color: #111;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-overlay__col--left ul {
+    margin-top: 4.6rem;
+    gap: 2.65rem;
+  }
+
+  .nav-overlay__col--left a {
+    display: inline-block;
+    max-width: 100%;
+    font-size: clamp(2rem, 8.2vw, 2.75rem);
+    font-weight: 400;
+    line-height: 0.96;
+    letter-spacing: 0.025em;
+  }
+
+  .nav-overlay__mobile-footer {
+    position: absolute;
+    left: 2.5rem;
+    bottom: 2.45rem;
+    display: grid;
+    gap: 1.05rem;
+  }
+
+  .nav-overlay__mobile-footer a {
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-overlay__col--right {
+    position: absolute;
+    inset: 0;
+    display: block;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .nav-overlay__preview,
+  .nav-overlay__info > :not(.nav-overlay__door-btn) {
+    display: none;
+  }
+
+  .nav-overlay__door-btn {
+    position: absolute;
+    right: 2.5rem;
+    bottom: 2.45rem;
+    width: 1.7rem !important;
+    height: 2.3rem;
+    overflow: hidden;
+    border: 0 !important;
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 0 !important;
+    background: #050505 !important;
+    color: transparent;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .site-root.is-nav-open .auto-header {
+    grid-template-columns: 1fr auto;
+    padding: 4.1rem 2.55rem 0;
+  }
+
+  .site-root.is-nav-open .auto-header__brand {
+    visibility: hidden;
+  }
+
   .case-study__header {
     min-height: 58px;
   }
@@ -3778,8 +3925,8 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
   }
 
   .auto-header.is-open {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .hero-slideshow__title {
@@ -3865,6 +4012,15 @@ body[data-kaynx-color="white"] .site-root[data-page="figures"] .live-clock {
 
   .figures-index__image-inner {
     margin-inline: 0;
+  }
+
+  .figures-index__image-wrap {
+    clip-path: inset(0);
+  }
+
+  .figures-index__entry {
+    opacity: 1;
+    transform: none;
   }
 
   .figures-index__main {

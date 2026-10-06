@@ -7,6 +7,8 @@ import { SiteContentProvider } from "@/context/site-content-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // Without this, relative og:image URLs were baked in as http://localhost:3000 at build time.
+  metadataBase: new URL("https://kaynx1.com"),
   title: "Kaynx1 — Izzul Fitree",
   description:
     "Technical product development, AI automation, computer vision, interactive games and business systems by Izzul Fitree.",
@@ -19,7 +21,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // data-scroll-behavior lets Next jump to the top on navigation despite scroll-behavior: smooth.
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <MotionProvider>
           <SiteContentProvider>

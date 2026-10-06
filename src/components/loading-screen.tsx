@@ -11,8 +11,8 @@ interface LoadingScreenProps {
 }
 
 // Kaynx1 intro timing: word fill, page fade, then content entrance.
-const REVEAL_MS = 1800;
-const TOTAL_MS = 3400;
+const REVEAL_MS = 320;
+const TOTAL_MS = 900;
 const REDUCED_TOTAL_MS = 200;
 
 export function LoadingScreen({ onReveal, onComplete }: LoadingScreenProps) {

@@ -137,7 +137,8 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
 
       await page.getByRole("button", { name: "Index" }).click();
       await expect(page.locator(".figures-index__index-link")).toHaveCount(collection.count);
-      const generatedGameCovers = page.locator('.figures-index__index-visual img[src*="-cover-v2.webp"]');
+      // PixelMend (a dev project) also uses a -cover-v2.webp file; only the game covers count here.
+      const generatedGameCovers = page.locator('.figures-index__index-visual img[src*="-cover-v2.webp"]:not([src*="pixelmend"])');
       await expect(generatedGameCovers).toHaveCount(10);
       await generatedGameCovers.first().scrollIntoViewIfNeeded();
       await expect.poll(() => generatedGameCovers.first().evaluate((image) =>
@@ -180,5 +181,21 @@ test.describe("Kaynx1 motion fidelity smoke QA", () => {
     expect(settledTransform).toBe(initialTransform);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
     await page.screenshot({ path: "/tmp/kaynx1-mobile-dev-responsive.png", fullPage: false });
+  });
+
+  test("slow project images reveal a styled first card without a blank page", async ({ page }) => {
+    await page.route("**/images/projects/**", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await route.continue();
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/dev", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(650);
+
+    await expect(page.locator(".figures-index__image-skeleton").first()).toBeVisible();
+    const rootOpacity = await page.locator(".site-root").evaluate((node) => Number.parseFloat(getComputedStyle(node).opacity));
+    expect(rootOpacity).toBeGreaterThan(0.25);
+    await expect(page.locator('.figures-index__image img[loading="eager"]')).toHaveCount(1);
+    await page.screenshot({ path: "/tmp/kaynx1-mobile-slow-image-placeholder.png", fullPage: false });
   });
 });

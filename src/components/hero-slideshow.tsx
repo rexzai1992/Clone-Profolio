@@ -189,7 +189,8 @@ export function HeroSlideshow({
     [activeIndex, canAutoPlay, commitSlideChange, isSwitchLocked]
   );
 
-  const activeSlide = slides[activeIndex];
+  // Saved CMS content can arrive with fewer slides after autoplay has moved past them.
+  const activeSlide = slides[activeIndex] ?? slides[0];
 
   return (
     <section

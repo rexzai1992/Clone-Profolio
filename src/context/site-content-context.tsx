@@ -34,7 +34,8 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         headers: { accept: "application/json" }
       });
 
-      if (response.status === 404) {
+      // 204 = nothing saved (404 kept for workers deployed before that change).
+      if (response.status === 204 || response.status === 404) {
         setDocument(null);
         setError(null);
         return;

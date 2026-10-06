@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { PortfolioItem } from "@/data/site-config";
 import { ImageReveal } from "@/components/image-reveal";
 import { useSiteContent } from "@/context/site-content-context";
+import { SCROLL_REVEAL_THRESHOLDS, shouldScrollReveal } from "@/lib/scroll-reveal";
 
 export type PageSectionId = "featured" | "games" | "dev" | "news" | "about" | "contact";
 
@@ -128,9 +129,10 @@ export function PageSections({ only }: { only?: PageSectionId }) {
   const contactCopy = contactLines.find((line) => !/^(## |### |LINK: |FIELD: |UPLOAD: |SUBMIT: |THANKS: )/.test(line));
   const contactLinks = contactLines
     .filter((line) => line.startsWith("LINK: "))
-    .map((line) => {
+    .flatMap((line) => {
       const [label, href] = line.slice(6).split(" | ");
-      return { label, href };
+      // A CMS line missing " | url" would crash the page on href.startsWith.
+      return label && href ? [{ label, href }] : [];
     });
   const contactLocation = contactLines.find(
     (line) => !line.startsWith("LINK: ") && line !== contactCopy && !line.startsWith("## ") && !line.startsWith("### ")
@@ -151,14 +153,14 @@ export function PageSections({ only }: { only?: PageSectionId }) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+          if (!shouldScrollReveal(entry)) {
             return;
           }
           entry.target.setAttribute("data-revealed", "true");
           observer.unobserve(entry.target);
         });
       },
-      { threshold: [0, 0.2, 0.6] }
+      { threshold: SCROLL_REVEAL_THRESHOLDS }
     );
 
     revealNodes.forEach((node) => observer.observe(node));

@@ -425,15 +425,30 @@ export function SiteShell({ page = "home", section, collection = "figures" }: Si
 
   useEffect(() => {
     if (!uiState.isNavOpen) {
-      document.body.style.removeProperty("overflow");
       return;
     }
 
+    // html sets overflow-x, so body overflow alone never reaches the viewport, and Lenis keeps
+    // scrolling on wheel until stopped.
+    const root = document.documentElement;
+    root.style.setProperty("overflow", "hidden");
     document.body.style.setProperty("overflow", "hidden");
-    return () => {
-      document.body.style.removeProperty("overflow");
+    lenisRef.current?.stop();
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeNav();
+      }
     };
-  }, [uiState.isNavOpen]);
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      root.style.removeProperty("overflow");
+      document.body.style.removeProperty("overflow");
+      lenisRef.current?.start();
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [closeNav, uiState.isNavOpen]);
 
   useEffect(() => {
     return () => {
@@ -488,6 +503,7 @@ export function SiteShell({ page = "home", section, collection = "figures" }: Si
       );
   }, [
     introReady,
+    isRouteTransitioning,
     navigate,
     page,
     carouselItems,
@@ -534,7 +550,8 @@ export function SiteShell({ page = "home", section, collection = "figures" }: Si
         onToggleDoor={toggleDoor}
       />
 
-      <main className="site-main" aria-busy={uiState.isLoading}>
+      {/* inert keeps Tab and screen readers inside the open menu instead of the page behind it. */}
+      <main className="site-main" aria-busy={uiState.isLoading} inert={uiState.isNavOpen}>
         {pageContent}
       </main>
 
